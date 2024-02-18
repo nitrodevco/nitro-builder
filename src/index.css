@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,
+*:focus,
+*:hover {
+  outline: none;
+}
+
+::-webkit-scrollbar {
+  width:.25rem
+}
+
+::-webkit-scrollbar:horizontal {
+  height:.25rem
+}
+
+::-webkit-scrollbar:not(:horizontal) {
+  width:.25rem
+}
+
+::-webkit-scrollbar-track:horizontal {
+  border-bottom:.25rem solid rgba(0,0,0,.1)
+}
+
+::-webkit-scrollbar-track:not(:horizontal) {
+  border-right:.25rem solid rgba(0,0,0,.1)
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  border-bottom:.25rem solid rgba(30,114,149,.4)
+}
+
+::-webkit-scrollbar-thumb:horizontal:hover {
+  border-bottom:.25rem solid rgba(30,114,149,.8)
+}
+
+::-webkit-scrollbar-thumb:horizontal:active {
+  border-bottom:.25rem solid #185d79
+}
+
+::-webkit-scrollbar-thumb:not(:horizontal) {
+  border-right:.25rem solid rgba(30,114,149,.4)
+}
+
+::-webkit-scrollbar-thumb:not(:horizontal):hover {
+  border-right:.25rem solid rgba(30,114,149,.8)
+}
+
+::-webkit-scrollbar-thumb:not(:horizontal):active {
+  border-right:.25rem solid #185d79
+}
+
+::-webkit-scrollbar-corner {
+  background:rgba(0,0,0,.1)
+}
