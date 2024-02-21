@@ -11,4 +11,6 @@ export * from './asset/visualization/color';
 export * from './asset/visualization/gestures';
 export * from './asset/visualization/postures';
 export * from './bundle';
+export * from './nitro';
+export * from './pixi';
 export * from './utils';

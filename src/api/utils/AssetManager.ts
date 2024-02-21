@@ -1,10 +1,13 @@
-import { Spritesheet, SpritesheetData, Texture } from 'pixi.js';
+import { Assets, Spritesheet, SpritesheetData, Texture } from 'pixi.js';
 import { GraphicAssetCollection, IAssetData, IGraphicAsset, IGraphicAssetCollection } from '../asset';
+import { NitroBundle } from '../bundle';
+import { ArrayBufferToBase64 } from './ArrayBufferToBase64';
 
 export class AssetManager
 {
     private _textures: Map<string, Texture> = new Map();
     private _collections: Map<string, IGraphicAssetCollection> = new Map();
+    private _images: Map<string, Texture> = new Map();
 
     public getTexture(name: string): Texture
     {
@@ -53,6 +56,17 @@ export class AssetManager
         return existing;
     }
 
+    public getImage(name: string): Texture
+    {
+        if(!name) return null;
+
+        const existing = this._images.get(name);
+
+        if(!existing) return null;
+
+        return existing;
+    }
+
     public createCollection(data: IAssetData, spritesheet: Spritesheet): IGraphicAssetCollection
     {
         if(!data) return null;
@@ -81,6 +95,51 @@ export class AssetManager
         }
 
         this.createCollection(data, spritesheet);
+    }
+
+    public async downloadAsset(url: string): Promise<boolean>
+    {
+        try
+        {
+            const response = await fetch(url);
+
+            if(response.status !== 200) return;
+
+            let contentType = response.headers.get('Content-Type');
+
+            if(!contentType || !contentType.length) contentType = 'application/octet-stream';
+
+            switch(contentType)
+            {
+                case 'application/octet-stream': {
+                    const buffer = await response.arrayBuffer();
+                    const nitroBundle = await NitroBundle.from(buffer);
+
+                    await this.processAsset(
+                        nitroBundle.texture,
+                        nitroBundle.file as IAssetData
+                    );
+                    break;
+                }
+                case 'image/png':
+                case 'image/jpeg': {
+                    const buffer = await response.arrayBuffer();
+                    const base64 = ArrayBufferToBase64(buffer);
+                    const texture = await Assets.load(`data:${ contentType };base64,${ base64 }`);
+
+                    this.setTexture(url, texture);
+                }
+            }
+
+            return Promise.resolve(true);
+        }
+
+        catch (err)
+        {
+            console.error(err);
+
+            return Promise.resolve(false);
+        }
     }
 
     public get collections(): Map<string, IGraphicAssetCollection>

@@ -1,11 +1,12 @@
 import { Spritesheet, Texture } from 'pixi.js';
 import { useCallback, useState } from 'react';
 import { useBetween } from 'use-between';
-import { IAssetData, NitroBundle } from '../api';
+import { GetAssetManager, IAssetData, NitroBundle, TextureUtils } from '../api';
 
 const useNitroBundleHook = () =>
 {
-    const [ assetData, setAssetData ] = useState<IAssetData>({});
+    const [ assetData, setAssetData ] = useState<IAssetData>(null);
+    const [ spritesheet, setSpritesheet ] = useState<Spritesheet>(null);
     const [ texture, setTexture ] = useState<Texture>(null);
 
     const loadBundleFromFile = useCallback(async (file: File) =>
@@ -46,8 +47,6 @@ const useNitroBundleHook = () =>
                         return;
                     }
 
-                    console.log(bundle.file);
-
                     setAssetData(bundle.file ?? null);
 
                     if(data.spritesheet && Object.keys(data.spritesheet).length)
@@ -60,8 +59,13 @@ const useNitroBundleHook = () =>
                         {
                             const texture = spritesheet.textures[name];
 
-                            console.log(texture);
+                            const url = TextureUtils.generateImageUrl(texture);
                         }
+
+                        setTexture(new Texture(spritesheet.textureSource));
+                        setSpritesheet(spritesheet);
+
+                        GetAssetManager().createCollection(bundle.file, spritesheet);
                     }
 
                     resolve(true);
@@ -69,8 +73,9 @@ const useNitroBundleHook = () =>
             }
         });
     }, []);
+    
 
-    return { assetData, texture, loadBundleFromFile };
+    return { assetData, texture, spritesheet, loadBundleFromFile };
 }
 
 export const useNitroBundle = () => useBetween(useNitroBundleHook);

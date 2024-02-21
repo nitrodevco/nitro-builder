@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren, useEffect, useState } from 'react';
-import { GetPixi } from '../api/pixi/GetPixi';
+import { GetAssetManager, GetPixi, GetTicker } from '../api';
+import { GetRoomEngine } from '../nitro';
 import { NitroBuilderRouter } from './NitroBuilderRouter';
 
 export const NitroBuilderComponent: FC<PropsWithChildren<{}>> = props =>
@@ -8,29 +9,34 @@ export const NitroBuilderComponent: FC<PropsWithChildren<{}>> = props =>
 
     useEffect(() =>
     {
-        (async () =>
+        const start = async () =>
         {
-            try
-            {
-                await GetPixi().init({
-                    autoStart: false,
-                    autoDensity: false,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                    resizeTo: window,
-                    sharedTicker: true
-                });
+            await GetPixi().init({
+                autoStart: false,
+                autoDensity: false,
+                width: 800,
+                height: 600,
+                sharedTicker: true,
+                backgroundAlpha: 0
+            });
 
-                console.log(GetPixi());
+            await GetAssetManager().downloadAsset('./room.nitro');
+            await GetAssetManager().downloadAsset('./tile_cursor.nitro');
 
-                setIsReady(true);
-            }
+            console.log(GetAssetManager().collections);
 
-            catch(err)
-            {
+            console.log('yep')
 
-            }
-        })();
+            const roomEngine = GetRoomEngine();
+
+            await roomEngine.init();
+
+            GetTicker().maxFPS = window.NitroBuilderConfig['system.fps.max'];
+
+            setIsReady(true);
+        }
+
+        start();
     }, []);
 
     if(!isReady) return null;

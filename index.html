@@ -26,7 +26,14 @@
     <div id="generic-windows" class="absolute w-full h-full pointer-events-none [&>*]:pointer-events-auto z-20"></div>
     <script>
         window.NitroBuilderConfig = {
-            "api.url": '<{ VITE_NITROBUILDER_API_URL }>'
+            "api.url": '<{ VITE_NITROBUILDER_API_URL }>',
+            "furni.rotation.bounce.steps": 8,
+            "furni.rotation.bounce.height": 0.0625,
+            "room.color.skip.transition": true,
+            "system.fps.animation": 24,
+            "enable.avatar.arrow": false,
+            "url.prefix": "",
+            "pet.types": []
         }
     </script>
     <script type="module" src="./src/index.tsx"></script>
