@@ -5,7 +5,7 @@ import { Input } from '../../layout';
 
 export const OpenFileComponent: FC<{}> = props =>
 {
-    const { loadBundleFromFile = null } = useNitroBundle();
+    const { importBundle = null } = useNitroBundle();
     const navigate = useNavigate();
     const { localizeText } = useLanguage();
 
@@ -23,7 +23,7 @@ export const OpenFileComponent: FC<{}> = props =>
 
                 if(!file) return;
 
-                await loadBundleFromFile(file);
+                await importBundle(file);
 
                 navigate(`/editor/${ file.name }`);
             }

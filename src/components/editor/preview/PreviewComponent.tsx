@@ -1,65 +1,106 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { GetPixi, IRoomRenderingCanvas, Vector3d } from '../../../api';
-import { useNitroBundle } from '../../../hooks';
-import { GetRoomEngine, RoomPreviewer } from '../../../nitro';
+import { FC, useEffect, useRef } from 'react';
+import { GetAssetManager, GetPixi, RoomVariableEnum, Vector3d } from '../../../api';
+import { useNitroBundle, useRoomPreviewer } from '../../../hooks';
+import { GetRoomEngine, RoomGeometry, RoomPreviewer } from '../../../nitro';
+import { DispatchMouseEvent } from '../../../utils';
+import { SetActiveRoomId } from '../../../utils/SetActiveRoomId';
 
 export const PreviewComponent: FC<{}> = props =>
 {
-    const [ roomPreviewer, setRoomPreviewer ] = useState<RoomPreviewer>(null);
-    const [ renderingCanvas, setRenderingCanvas ] = useState<IRoomRenderingCanvas>(null);
-    const { assetData = null, texture = null, spritesheet = null } = useNitroBundle();
+    const { assetData = null, spritesheet = null } = useNitroBundle();
+    const { roomPreviewer } = useRoomPreviewer();
     const elementRef = useRef<HTMLDivElement>();
-
-    useEffect(() =>
-    {
-        setRoomPreviewer(new RoomPreviewer(GetRoomEngine(), ++RoomPreviewer.PREVIEW_COUNTER));
-
-        const element = elementRef.current;
-
-        if(!element) return;
-
-        element.appendChild(GetPixi().canvas);
-    }, []);
 
     useEffect(() =>
     {
         if(!roomPreviewer) return;
 
-        const container = roomPreviewer.getRoomCanvas(Math.floor(elementRef.current.clientWidth), Math.floor(elementRef.current.clientHeight));
-        const renderingCanvas = roomPreviewer.getRenderingCanvas();
+        SetActiveRoomId(roomPreviewer.roomId);
 
-        setRenderingCanvas(renderingCanvas);
+        const pixi = GetPixi();
+        const canvas = pixi.canvas;
+        const roomEngine = GetRoomEngine();
+        const width = Math.floor(elementRef.current.clientWidth);
+        const height = Math.floor(elementRef.current.clientHeight);
+
+        pixi.renderer.resize(width, height);
+
+        const container = roomPreviewer.getRoomCanvas(width, height);
+
+        pixi.stage.addChild(container);
+
+        const geometry = roomEngine.getRoomInstanceGeometry(roomPreviewer.roomId, RoomPreviewer.PREVIEW_CANVAS_ID) as RoomGeometry;
+
+        if(geometry)
+        {
+            const minX = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MIN_X) || 0);
+            const maxX = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MAX_X) || 0);
+            const minY = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MIN_Y) || 0);
+            const maxY = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MAX_Y) || 0);
+
+            let x = ((minX + maxX) / 2);
+            let y = ((minY + maxY) / 2);
+
+            const offset = 20;
+
+            x = (x + (offset - 1));
+            y = (y + (offset - 1));
+
+            const z = (Math.sqrt(((offset * offset) + (offset * offset))) * Math.tan(((30 / 180) * Math.PI)));
+
+            geometry.location = new Vector3d(x, y, z);
+        }
+
+        const element = elementRef.current;
+
+        if(!element) return;
+
+        canvas.onclick = event => DispatchMouseEvent(event);
+        canvas.onmousemove = event => DispatchMouseEvent(event);
+        canvas.onmousedown = event => DispatchMouseEvent(event);
+        canvas.onmouseup = event => DispatchMouseEvent(event);
+
+        element.appendChild(canvas);
+
+        const resizeObserver = new ResizeObserver(() =>
+        {
+            if(!roomPreviewer || !elementRef.current) return;
+
+            const width = Math.floor(elementRef.current.clientWidth);
+            const height = Math.floor(elementRef.current.clientHeight);
+
+            roomPreviewer.modifyRoomCanvas(width, height);
+
+            pixi.renderer.resize(width, height);
+            pixi.render();
+        });
+        
+        resizeObserver.observe(elementRef.current);
+
+        return () =>
+        {
+            resizeObserver.disconnect();
+
+            pixi.stage.removeChild(container);
+
+            element.removeChild(pixi.canvas);
+            
+        }
     }, [ roomPreviewer ]);
 
     useEffect(() =>
     {
-        if(!renderingCanvas) return;
+        if(!assetData || !spritesheet || !roomPreviewer) return;
 
-        const canvas = renderingCanvas.master;
+        GetAssetManager().createCollection(assetData, spritesheet);
 
-        GetPixi().stage.addChild(canvas);
-
-        return () =>
-        {
-            GetPixi().stage.removeChild(canvas);
-        }
-    }, [ renderingCanvas ]);
-
-    useEffect(() =>
-    {
-        if(!roomPreviewer || !assetData) return;
-
-        const previewer = roomPreviewer;
-
-        console.log(assetData);
-
-        previewer.addFurnitureIntoRoom(assetData.name, new Vector3d(90));
+        roomPreviewer.addFurnitureIntoRoom(assetData.name, new Vector3d(90));
 
         return () =>
         {
-            previewer.reset(true);
+            roomPreviewer.reset(true);
         }
-    }, [ roomPreviewer, assetData ]);
+    }, [ assetData, spritesheet, roomPreviewer ]);
 
     return (
         <div className="w-full h-full" ref={ elementRef } />

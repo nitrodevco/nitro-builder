@@ -1,6 +1,7 @@
 export * from './AdvancedMap';
 export * from './ArrayBufferToBase64';
 export * from './AssetManager';
+export * from './Base64ToArrayBuffer';
 export * from './BinaryReader';
 export * from './ColorConverter';
 export * from './CompareArrays';

@@ -1,10 +1,13 @@
 import { FC } from 'react';
 import { useNitroBundle } from '../../../hooks';
-import { Flex } from '../../../layout';
+import { Button, Flex } from '../../../layout';
 
 export const SideBarComponent: FC<{}> = () =>
 {
-    const { assetData } = useNitroBundle();
+    const { assetData, setAssetData, exportBundle } = useNitroBundle();
+
+    const type = assetData?.type;
+    const visualizations = assetData?.visualizations?.map(visualization => visualization.size) ?? [];
 
     return (
         <Flex
@@ -14,7 +17,13 @@ export const SideBarComponent: FC<{}> = () =>
                 list<br/>of<br />icons
             </Flex>
             <Flex
+                column
                 className="w-full h-full">
+                <span>name: { assetData.name }</span>
+                <span>visualization type: { assetData.visualizationType }</span>
+                <span>logic type: { assetData.logicType }</span>
+                <span>visualizations: { visualizations.toString() }</span>
+                <Button onClick={ () => exportBundle() }>Export Bundle</Button>
             </Flex>
         </Flex>
     );

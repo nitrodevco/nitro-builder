@@ -1,8 +1,6 @@
 import { Container, Matrix, Point, Sprite, Texture, TilingSprite } from 'pixi.js';
-import { IRoomGeometry, IRoomPlane, IVector3D, TextureUtils, Vector3d } from '../../../../../api';
-import { RoomPlaneBitmapMask } from './RoomPlaneBitmapMask';
-import { RoomPlaneRectangleMask } from './RoomPlaneRectangleMask';
-import { PlaneMaskManager } from './mask';
+import { GetAssetManager, IRoomGeometry, IRoomPlane, IVector3D, TextureUtils, Vector3d } from '../../../../../api';
+import { RoomGeometry } from '../../../utils';
 import { Randomizer } from './utils';
 
 export class RoomPlane implements IRoomPlane
@@ -29,19 +27,12 @@ export class RoomPlane implements IRoomPlane
     private _offset: Point;
     private _relativeDepth: number;
     private _color: number;
-    private _maskManager: PlaneMaskManager = null;
     private _id: string;
     private _uniqueId: number;
     private _textureOffsetX: number;
     private _textureOffsetY: number;
     private _textureMaxX: number;
     private _textureMaxY: number;
-    private _useMask: boolean;
-    private _bitmapMasks: RoomPlaneBitmapMask[];
-    private _rectangleMasks: RoomPlaneRectangleMask[];
-    private _bitmapMasksOld: RoomPlaneBitmapMask[];
-    private _rectangleMasksOld: RoomPlaneRectangleMask[];
-    private _maskChanged: boolean;
     private _cornerA: Vector3d;
     private _cornerB: Vector3d;
     private _cornerC: Vector3d;
@@ -50,20 +41,13 @@ export class RoomPlane implements IRoomPlane
     private _height: number = 0;
     private _canBeVisible: boolean;
 
-    private _planeContainer: Container = null;
     private _tilingSprite: TilingSprite = null;
     private _planeTexture: Texture = null;
-    private _maskTexture: Texture = null;
 
     constructor(origin: IVector3D, location: IVector3D, leftSide: IVector3D, rightSide: IVector3D, type: number, usesMask: boolean, secondaryNormals: IVector3D[], randomSeed: number, textureOffsetX: number = 0, textureOffsetY: number = 0, textureMaxX: number = 0, textureMaxY: number = 0)
     {
         this._secondaryNormals = [];
-        this._bitmapMasks = [];
-        this._rectangleMasks = [];
-        this._bitmapMasksOld = [];
-        this._rectangleMasksOld = [];
         this._randomSeed = randomSeed;
-        this._maskChanged = false;
         this._origin = new Vector3d();
         this._origin.assign(origin);
         this._location = new Vector3d();
@@ -112,7 +96,6 @@ export class RoomPlane implements IRoomPlane
         this._textureOffsetY = textureOffsetY;
         this._textureMaxX = textureMaxX;
         this._textureMaxY = textureMaxY;
-        this._useMask = usesMask;
         this._uniqueId = ++RoomPlane._uniqueIdCounter;
     }
 
@@ -127,50 +110,71 @@ export class RoomPlane implements IRoomPlane
         this._cornerB = null;
         this._cornerC = null;
         this._cornerD = null;
-        this._bitmapMasks = null;
-        this._rectangleMasks = null;
 
         this._disposed = true;
     }
 
-    private needsNewTexture(geometry: IRoomGeometry, timeSinceStartMs: number): boolean
+    private updatePlane(geometry: IRoomGeometry, timeSinceStartMs: number, width: number, height: number, normal: IVector3D): Container
     {
-        if(!geometry) return false;
-
-        if(this._canBeVisible && (!this._planeContainer || this._maskChanged)) return true;
-
-        // eventually we will check if we are animated and need to update that
-
-        return false;
-    }
-
-    private updatePlane(geometry: IRoomGeometry, timeSinceStartMs: number, width: number, height: number, normal: IVector3D): void
-    {
-        if(this.needsNewTexture(geometry, timeSinceStartMs))
+        const buildGeometry = (size: number, horizontalAngle: number, verticalAngle: number): IRoomGeometry =>
         {
-            if(!this._planeContainer) this._planeContainer = new Container();
+            horizontalAngle = Math.abs(horizontalAngle);
+            if(horizontalAngle > 90) horizontalAngle = 90;
 
-            if(!this._tilingSprite)
-            {
-                this._tilingSprite = new TilingSprite({
-                    texture: Texture.WHITE,
-                    tint: 0xFF0000,
+            verticalAngle = Math.abs(verticalAngle);
+            if(verticalAngle > 90) verticalAngle = 90;
+
+            return new RoomGeometry(size, new Vector3d(horizontalAngle, verticalAngle), new Vector3d(-10, 0, 0));
+        }
+
+        const planeGeometry = buildGeometry(geometry.scale, 45, 30);
+
+        switch(this._type)
+        {
+            case RoomPlane.TYPE_FLOOR: {
+                const _local_10 = planeGeometry.getScreenPoint(new Vector3d(0, 0, 0));
+                const _local_11 = planeGeometry.getScreenPoint(new Vector3d(0, (height / planeGeometry.scale), 0));
+                const _local_12 = planeGeometry.getScreenPoint(new Vector3d((width / planeGeometry.scale), 0, 0));
+
+                /* if(_local_10 && _local_11 && _local_12)
+                {
+                    width = Math.round(Math.abs((_local_10.x - _local_12.x)));
+                    height = Math.round(Math.abs((_local_10.x - _local_11.x)));
+                } */
+
+                return new TilingSprite({
+                    texture: GetAssetManager().getTexture('room_floor_texture_64_0_floor_basic'),
                     width: width,
                     height: height,
                     applyAnchorToTexture: true
                 });
-
-                this._planeContainer.addChild(this._tilingSprite);
             }
-            else
-            {
-                this._tilingSprite.texture = Texture.WHITE;
-                this._tilingSprite.width = width;
-                this._tilingSprite.height = height;
+            case RoomPlane.TYPE_WALL: {
+                const _local_8 = planeGeometry.getScreenPoint(new Vector3d(0, 0, 0));
+                const _local_9 = planeGeometry.getScreenPoint(new Vector3d(0, 0, (height / planeGeometry.scale)));
+                const _local_10 = planeGeometry.getScreenPoint(new Vector3d(0, (width / planeGeometry.scale), 0));
+
+                /* if(_local_8 && _local_9 && _local_10)
+                {
+                    width = Math.round(Math.abs((_local_8.x - _local_10.x)));
+                    height = Math.round(Math.abs((_local_8.y - _local_9.y)));
+                } */
+
+                return new TilingSprite({
+                    texture: GetAssetManager().getTexture('room_wall_texture_64_0_wall_lively'),
+                    width: width,
+                    height: height,
+                    applyAnchorToTexture: true
+                });
             }
         }
 
-        return null;
+        return new TilingSprite({
+            texture: Texture.WHITE,
+            width: width,
+            height: height,
+            applyAnchorToTexture: true
+        });
     }
 
     public update(geometry: IRoomGeometry, timeSinceStartMs: number): boolean
@@ -246,42 +250,23 @@ export class RoomPlane implements IRoomPlane
             this._geometryUpdateId = geometry.updateId;
         }
 
-        if(geometryChanged || this.needsNewTexture(geometry, timeSinceStartMs))
-        {
-            Randomizer.setSeed(this._randomSeed);
+        Randomizer.setSeed(this._randomSeed);
 
-            const width = (this._leftSide.length * geometry.scale);
-            const height = (this._rightSide.length * geometry.scale);
-            const normal = geometry.getCoordinatePosition(this._normal);
+        const width = (this._leftSide.length * geometry.scale);
+        const height = (this._rightSide.length * geometry.scale);
+        const normal = geometry.getCoordinatePosition(this._normal);
 
-            this.updatePlane(geometry, timeSinceStartMs, width, height, normal);
-            this.updateMask(geometry, width, height, normal);
+        const planeSprite = this.updatePlane(geometry, timeSinceStartMs, width, height, normal);
+        const planeTexture = TextureUtils.createAndWriteRenderTexture(this._width, this._height, planeSprite, this.getMatrixForDimensions(width, height)) as Texture;
+        const newPlaneSprite = new Sprite(planeTexture);
 
-            const planeTexture = TextureUtils.createAndWriteRenderTexture(this._width, this._height, this._planeContainer, this.getMatrixForDimensions(width, height)) as Texture;
-            const planeSprite = new Sprite(planeTexture);
-            let maskSprite: Sprite = null;
+        const container = new Container();
 
-            if(this._maskTexture)
-            {
-                const maskTexture = TextureUtils.createAndWriteRenderTexture(width, height, new Sprite(this._maskTexture), this.getMatrixForDimensions(width, height)) as Texture;
-                maskSprite = new Sprite(maskTexture);
+        container.addChild(newPlaneSprite);
 
-                (async () =>
-                {
-                    console.log(`<img src='${ await TextureUtils.generateImageUrl(maskSprite) }' />`);
-                })();
-            }
+        this._planeTexture = TextureUtils.createAndWriteRenderTexture(this._width, this._height, container) as Texture;
 
-            const container = new Container();
-
-            container.addChild(planeSprite);
-
-            this._planeTexture = TextureUtils.createAndWriteRenderTexture(this._width, this._height, container) as Texture;
-
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     private updateCorners(geometry: IRoomGeometry): void
@@ -353,96 +338,6 @@ export class RoomPlane implements IRoomPlane
         return matrix;
     }
 
-    public resetBitmapMasks(): void
-    {
-        if(this._disposed || !this._useMask || !this._bitmapMasks.length) return;
-
-        this._maskChanged = true;
-        this._bitmapMasks = [];
-    }
-
-    public addBitmapMask(maskType: string, leftSideLoc: number, rightSideLoc: number): boolean
-    {
-        if(!this._useMask) return false;
-
-        for(const mask of this._bitmapMasks)
-        {
-            if(!mask) continue;
-
-            if((mask.type === maskType) && (mask.leftSideLoc === leftSideLoc) && (mask.rightSideLoc === rightSideLoc)) return false;
-        }
-
-        this._bitmapMasks.push(new RoomPlaneBitmapMask(maskType, leftSideLoc, rightSideLoc));
-        this._maskChanged = true;
-
-        return true;
-    }
-
-    public addRectangleMask(leftSide: number, rightSide: number, leftSideLength: number, rightSideLength: number): boolean
-    {
-        if(!this._useMask) return false;
-
-        for(const mask of this._rectangleMasks)
-        {
-            if(!mask) continue;
-
-            if((((mask.leftSideLoc === leftSide) && (mask.rightSideLoc === rightSide)) && (mask.leftSideLength === leftSideLength)) && (mask.rightSideLength === rightSideLength)) return false;
-        }
-
-        this._rectangleMasks.push(new RoomPlaneRectangleMask(leftSide, rightSide, leftSideLength, rightSideLength));
-        this._maskChanged = true;
-
-        return true;
-    }
-
-    private updateMask(geometry: IRoomGeometry, width: number, height: number, normal: IVector3D): void
-    {
-        if(!geometry || !this._useMask || (!this._bitmapMasks.length && !this._rectangleMasks.length) || !this._maskChanged || !this._maskManager) return;
-
-        if(!this._maskTexture) this._maskTexture = TextureUtils.createTexture(width, height) as Texture;
-
-        TextureUtils.clearTexture(this._maskTexture);
-
-        this._bitmapMasksOld = [];
-        this._rectangleMasksOld = [];
-
-        this._bitmapMasks.forEach(mask =>
-        {
-            const type = mask.type;
-            const posX = (width - ((width * mask.leftSideLoc) / this._leftSide.length));
-            const posY = (height - ((height * mask.rightSideLoc) / this._rightSide.length));
-
-            this._maskManager.updateMask(this._maskTexture, type, geometry.scale, normal, posX, posY);
-            this._bitmapMasksOld.push(new RoomPlaneBitmapMask(type, mask.leftSideLoc, mask.rightSideLoc));
-        });
-
-        this._rectangleMasks.forEach(mask =>
-        {
-            const posX = (width - ((width * mask.leftSideLoc) / this._leftSide.length));
-            const posY = (height - ((height * mask.rightSideLoc) / this._rightSide.length));
-            const wd = ((width * mask.leftSideLength) / this._leftSide.length);
-            const ht = ((height * mask.rightSideLength) / this._rightSide.length);
-
-            const sprite = new Sprite(Texture.WHITE);
-
-            sprite.tint = 0x000000;
-            sprite.width = wd;
-            sprite.height = ht;
-            sprite.position.set((posX - wd), (posY - ht));
-
-            TextureUtils.writeToTexture(sprite, this._maskTexture, false);
-
-            this._rectangleMasksOld.push(new RoomPlaneRectangleMask(mask.leftSideLength, mask.rightSideLoc, mask.leftSideLength, mask.rightSideLength));
-        });
-
-        this._maskChanged = false;
-    }
-
-    public get planeContainer(): Container
-    {
-        return this._planeContainer;
-    }
-
     public get canBeVisible(): boolean
     {
         return this._canBeVisible;
@@ -511,11 +406,6 @@ export class RoomPlane implements IRoomPlane
     public set hasTexture(k: boolean)
     {
         this._hasTexture = k;
-    }
-
-    public set maskManager(manager: PlaneMaskManager)
-    {
-        this._maskManager = manager;
     }
 
     public set id(k: string)

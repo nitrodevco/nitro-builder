@@ -4,7 +4,6 @@ import { RoomObjectSpriteVisualization } from '../../RoomObjectSpriteVisualizati
 import { RoomMapData } from './RoomMapData';
 import { RoomMapMaskData } from './RoomMapMaskData';
 import { RoomPlane } from './RoomPlane';
-import { RoomPlaneBitmapMaskData } from './RoomPlaneBitmapMaskData';
 import { RoomPlaneBitmapMaskParser } from './RoomPlaneBitmapMaskParser';
 import { RoomPlaneData } from './RoomPlaneData';
 import { RoomPlaneParser } from './RoomPlaneParser';
@@ -136,8 +135,6 @@ export class RoomVisualization extends RoomObjectSpriteVisualization implements 
 
         if(this._data)
         {
-            this._data.clearCache();
-
             this._data = null;
         }
     }
@@ -288,17 +285,6 @@ export class RoomVisualization extends RoomObjectSpriteVisualization implements 
         if(this.updateModelCounter === k.updateCounter) return false;
 
         let didUpdate = false;
-
-        const planeMask = k.getValue<RoomMapMaskData>(RoomObjectVariable.ROOM_PLANE_MASK_XML);
-
-        if(planeMask !== this._maskData)
-        {
-            this.updatePlaneMasks(planeMask);
-
-            this._maskData = planeMask;
-
-            didUpdate = true;
-        }
 
         const backgroundColor = k.getValue<number>(RoomObjectVariable.ROOM_BACKGROUND_COLOR);
 
@@ -513,27 +499,7 @@ export class RoomVisualization extends RoomObjectSpriteVisualization implements 
                     // }
                 }
 
-
-                if(plane)
-                {
-                    plane.maskManager = this._data.maskManager;
-
-                    let _local_19 = 0;
-
-                    while(_local_19 < this._roomPlaneParser.getPlaneMaskCount(index))
-                    {
-                        const _local_20 = this._roomPlaneParser.getPlaneMaskLeftSideLoc(index, _local_19);
-                        const _local_21 = this._roomPlaneParser.getPlaneMaskRightSideLoc(index, _local_19);
-                        const _local_22 = this._roomPlaneParser.getPlaneMaskLeftSideLength(index, _local_19);
-                        const _local_23 = this._roomPlaneParser.getPlaneMaskRightSideLength(index, _local_19);
-
-                        plane.addRectangleMask(_local_20, _local_21, _local_22, _local_23);
-
-                        _local_19++;
-                    }
-
-                    this._planes.push(plane);
-                }
+                if(plane) this._planes.push(plane);
             }
             else
             {
@@ -785,109 +751,6 @@ export class RoomVisualization extends RoomObjectSpriteVisualization implements 
         }
 
         return updated;
-    }
-
-    protected updatePlaneMasks(k: RoomMapMaskData): void
-    {
-        if(!k) return;
-
-        this._roomPlaneBitmapMaskParser.initialize(k);
-
-        const _local_4: number[] = [];
-        const _local_5: number[] = [];
-
-        let _local_6 = false;
-        let index = 0;
-
-        while(index < this._planes.length)
-        {
-            const plane = this._planes[index];
-
-            if(plane)
-            {
-                plane.resetBitmapMasks();
-
-                if(plane.type === RoomPlane.TYPE_LANDSCAPE) _local_4.push(index);
-            }
-
-            index++;
-        }
-
-        for(const mask of this._roomPlaneBitmapMaskParser.masks.values())
-        {
-            const maskType = this._roomPlaneBitmapMaskParser.getMaskType(mask);
-            const maskLocation = this._roomPlaneBitmapMaskParser.getMaskLocation(mask);
-            const maskCategory = this._roomPlaneBitmapMaskParser.getMaskCategory(mask);
-
-            if(maskLocation)
-            {
-                let i = 0;
-
-                while(i < this._planes.length)
-                {
-                    const plane = this._planes[i];
-
-                    if((plane.type === RoomPlane.TYPE_WALL) || (plane.type === RoomPlane.TYPE_LANDSCAPE))
-                    {
-                        if(plane && plane.location && plane.normal)
-                        {
-                            const _local_14 = Vector3d.dif(maskLocation, plane.location);
-                            const _local_15 = Math.abs(Vector3d.scalarProjection(_local_14, plane.normal));
-
-                            if(_local_15 < 0.01)
-                            {
-                                if(plane.leftSide && plane.rightSide)
-                                {
-                                    const leftSideLoc = Vector3d.scalarProjection(_local_14, plane.leftSide);
-                                    const rightSideLoc = Vector3d.scalarProjection(_local_14, plane.rightSide);
-
-                                    if((plane.type === RoomPlane.TYPE_WALL) || ((plane.type === RoomPlane.TYPE_LANDSCAPE) && (maskCategory === RoomPlaneBitmapMaskData.HOLE)))
-                                    {
-                                        plane.addBitmapMask(maskType, leftSideLoc, rightSideLoc);
-                                    }
-                                    else
-                                    {
-                                        if(plane.type === RoomPlane.TYPE_LANDSCAPE)
-                                        {
-                                            if(!plane.canBeVisible) _local_6 = true;
-
-                                            plane.canBeVisible = true;
-
-                                            _local_5.push(i);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    i++;
-                }
-            }
-        }
-
-        index = 0;
-
-        while(index < _local_4.length)
-        {
-            const planeIndex = _local_4[index];
-
-            if(_local_5.indexOf(planeIndex) < 0)
-            {
-                const plane = this._planes[planeIndex];
-
-                plane.canBeVisible = false;
-                _local_6 = true;
-            }
-
-            index++;
-        }
-
-        if(_local_6)
-        {
-            this._visiblePlanes = [];
-            this._visiblePlaneSpriteNumbers = [];
-        }
     }
 
     private updateSprite(sprite: IRoomObjectSprite, geometry: IRoomGeometry, plane: RoomPlane, _arg_3: string, relativeDepth: number): void

@@ -1,6 +1,6 @@
 import { IFurnitureStackingHeightMap, ILegacyWallGeometry, IObjectData, IRoomCanvasMouseListener, IRoomEngine, IRoomGeometry, IRoomObject, IRoomObjectController, IRoomObjectEventManager, ISelectedRoomObjectData, IVector3D, MouseEventType, RoomObjectCategory, RoomObjectOperationType, RoomObjectPlacementSource, RoomObjectType, RoomObjectUserType, RoomObjectVariable, Vector3d } from '../../api';
 import { NitroEventDispatcher, RoomEngineDimmerStateEvent, RoomEngineObjectEvent, RoomEngineObjectPlacedEvent, RoomEngineObjectPlacedOnUserEvent, RoomEngineObjectPlaySoundEvent, RoomEngineRoomAdEvent, RoomEngineSamplePlaybackEvent, RoomEngineTriggerWidgetEvent, RoomEngineUseProductEvent, RoomObjectBadgeAssetEvent, RoomObjectDataRequestEvent, RoomObjectDimmerStateUpdateEvent, RoomObjectEvent, RoomObjectFloorHoleEvent, RoomObjectFurnitureActionEvent, RoomObjectHSLColorEnableEvent, RoomObjectHSLColorEnabledEvent, RoomObjectMouseEvent, RoomObjectMoveEvent, RoomObjectPlaySoundIdEvent, RoomObjectRoomAdEvent, RoomObjectSamplePlaybackEvent, RoomObjectSoundMachineEvent, RoomObjectStateChangedEvent, RoomObjectTileMouseEvent, RoomObjectWallMouseEvent, RoomObjectWidgetRequestEvent, RoomSpriteMouseEvent } from '../events';
-import { RoomEnterEffect, RoomId, RoomObjectUpdateMessage, SelectedRoomObjectData } from '../room';
+import { RoomEnterEffect, RoomObjectUpdateMessage, SelectedRoomObjectData } from '../room';
 import { ObjectAvatarSelectedMessage, ObjectDataUpdateMessage, ObjectSelectedMessage, ObjectTileCursorUpdateMessage, ObjectVisibilityUpdateMessage } from './messages';
 
 export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomObjectEventManager
@@ -676,7 +676,7 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
         const objectType = event.objectType;
         const objectCategory = this._roomEngine.getRoomObjectCategoryForType(objectType);
 
-        if(RoomId.isRoomPreviewerId(roomId)) return;
+        //if(RoomId.isRoomPreviewerId(roomId)) return;
 
         switch(event.type)
         {

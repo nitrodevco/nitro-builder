@@ -1,8 +1,11 @@
 import { IAssetData, IGraphicAssetCollection, IObjectVisualizationData } from '../../../../../api';
 import { PlaneMaskManager } from './mask';
+import { FloorRasterizer, WallRasterizer } from './rasterizer';
 
 export class RoomVisualizationData implements IObjectVisualizationData
 {
+    private _wallRasterizer: WallRasterizer = new WallRasterizer();
+    private _floorRasterizer: FloorRasterizer = new FloorRasterizer();
     private _maskManager: PlaneMaskManager = new PlaneMaskManager();
     private _initialized: boolean = false;
 
@@ -12,9 +15,11 @@ export class RoomVisualizationData implements IObjectVisualizationData
 
         const wallData = asset.roomVisualization.wallData;
 
+        if(wallData) this._wallRasterizer.initialize(wallData);
+
         const floorData = asset.roomVisualization.floorData;
 
-        const landscapeData = asset.roomVisualization.landscapeData;
+        if(floorData) this._floorRasterizer.initialize(floorData);
 
         const maskData = asset.roomVisualization.maskData;
 
@@ -37,13 +42,17 @@ export class RoomVisualizationData implements IObjectVisualizationData
     {
         if(this._initialized) return;
 
-        this._maskManager.initializeAssetCollection(collection);
-
         this._initialized = true;
     }
 
-    public clearCache(): void
+    public get wallRasterizer(): WallRasterizer
     {
+        return this._wallRasterizer;
+    }
+
+    public get floorRasterizer(): FloorRasterizer
+    {
+        return this._floorRasterizer;
     }
 
     public get maskManager(): PlaneMaskManager

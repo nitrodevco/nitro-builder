@@ -1,4 +1,4 @@
-import { Container, Point, Rectangle, Sprite, Texture } from 'pixi.js';
+import { Container, Point, Rectangle, Sprite } from 'pixi.js';
 import { GetTickerTime, IObjectData, IRoomObjectController, IRoomRenderingCanvas, IVector3D, RoomObjectCategory, RoomObjectUserType, RoomObjectVariable, Vector3d } from '../../api';
 import { NitroEventDispatcher, RoomEngineEvent, RoomEngineObjectEvent } from '../events';
 import { RoomEngine } from './RoomEngine';
@@ -34,7 +34,6 @@ export class RoomPreviewer
     private _automaticStateChange: boolean;
     private _previousAutomaticStateChangeTime: number;
     private _addViewOffset: Point;
-    private _backgroundColor: number = 305148561;
     private _backgroundSprite: Sprite = null;
     private _disableUpdate: boolean = false;
 
@@ -235,9 +234,7 @@ export class RoomPreviewer
         this._currentPreviewObjectType = type;
         this._currentPreviewObjectCategory = RoomObjectCategory.FLOOR;
         this._currentPreviewObjectData = '';
-
-        console.error(type);
-
+        
         if(this._roomEngine.addFurnitureFloorByTypeName(this._previewRoomId, RoomPreviewer.PREVIEW_OBJECT_ID, type, new Vector3d(RoomPreviewer.PREVIEW_OBJECT_LOCATION_X, RoomPreviewer.PREVIEW_OBJECT_LOCATION_Y, 0), direction, 0, objectData, NaN, -1, 0, -1, '', true, false))
         {
             this._previousAutomaticStateChangeTime = GetTickerTime();
@@ -425,27 +422,11 @@ export class RoomPreviewer
         {
             const displayObject = this._roomEngine.getRoomInstanceDisplay(this._previewRoomId, RoomPreviewer.PREVIEW_CANVAS_ID, width, height, this._currentPreviewScale);
 
-            if(displayObject && (this._backgroundColor !== null))
-            {
-                let backgroundSprite = this._backgroundSprite;
-
-                if(!backgroundSprite)
-                {
-                    backgroundSprite = new Sprite(Texture.WHITE);
-
-                    displayObject.addChildAt(backgroundSprite, 0);
-                }
-
-                backgroundSprite.width = width;
-                backgroundSprite.height = height;
-                //backgroundSprite.tint = this._backgroundColor;
-            }
-
             this._roomEngine.setRoomInstanceRenderingCanvasMask(this._previewRoomId, RoomPreviewer.PREVIEW_CANVAS_ID, true);
 
             const geometry = this._roomEngine.getRoomInstanceGeometry(this._previewRoomId, RoomPreviewer.PREVIEW_CANVAS_ID);
 
-            if(geometry) geometry.adjustLocation(new Vector3d(RoomPreviewer.PREVIEW_OBJECT_LOCATION_X, RoomPreviewer.PREVIEW_OBJECT_LOCATION_Y, 0), 30);
+            //if(geometry) geometry.adjustLocation(new Vector3d(RoomPreviewer.PREVIEW_OBJECT_LOCATION_X, RoomPreviewer.PREVIEW_OBJECT_LOCATION_Y, 0), 30);
 
             this._currentPreviewCanvasWidth = width;
             this._currentPreviewCanvasHeight = height;
@@ -686,32 +667,6 @@ export class RoomPreviewer
         if(this._disableUpdate && !k) return;
 
         this.checkAutomaticRoomObjectStateChange();
-
-        if(this.isRoomEngineReady)
-        {
-            let offset = this._roomEngine.getRoomInstanceRenderingCanvasOffset(this._previewRoomId, RoomPreviewer.PREVIEW_CANVAS_ID);
-
-            if(offset)
-            {
-                this.updatePreviewObjectBoundingRectangle(offset);
-
-                if(this._currentPreviewRectangle)
-                {
-                    const scale = this._currentPreviewScale;
-
-                    offset = this.validatePreviewSize(offset);
-
-                    const canvasOffset = this.getCanvasOffset(offset);
-
-                    if(canvasOffset)
-                    {
-                        this._roomEngine.setRoomInstanceRenderingCanvasOffset(this._previewRoomId, RoomPreviewer.PREVIEW_CANVAS_ID, canvasOffset);
-                    }
-
-                    if(this._currentPreviewScale !== scale) this._currentPreviewRectangle = null;
-                }
-            }
-        }
     }
 
     private onRoomInitializedonRoomInitialized(event: RoomEngineEvent): void
@@ -797,16 +752,6 @@ export class RoomPreviewer
     public get roomId(): number
     {
         return this._previewRoomId;
-    }
-
-    public get backgroundColor(): number
-    {
-        return this._backgroundColor;
-    }
-
-    public set backgroundColor(color: number)
-    {
-        this._backgroundColor = color;
     }
 
     public get width(): number

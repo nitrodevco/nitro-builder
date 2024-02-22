@@ -1,15 +1,49 @@
 import { Spritesheet, Texture } from 'pixi.js';
 import { useCallback, useState } from 'react';
 import { useBetween } from 'use-between';
-import { GetAssetManager, IAssetData, NitroBundle, TextureUtils } from '../api';
+import { IAssetData, NitroBundle } from '../api';
+import { CreateSpritesheet } from '../utils';
 
 const useNitroBundleHook = () =>
 {
     const [ assetData, setAssetData ] = useState<IAssetData>(null);
     const [ spritesheet, setSpritesheet ] = useState<Spritesheet>(null);
-    const [ texture, setTexture ] = useState<Texture>(null);
 
-    const loadBundleFromFile = useCallback(async (file: File) =>
+    const exportBundle = useCallback(async () =>
+    {
+        if(!spritesheet) return null;
+
+        let textures: Texture[] = [];
+
+        for(const name in spritesheet.textures)
+        {
+            const texture = spritesheet.textures[name];
+
+            if(!texture) continue;
+
+            textures.push(texture);
+        }
+
+        const newSpritesheet = await CreateSpritesheet(textures);
+
+        const newAssetData = { ...assetData };
+
+        newAssetData.spritesheet = newSpritesheet.spritesheetData;
+
+        const bundle = new NitroBundle();
+
+        bundle.addFile(`${ newAssetData.name }.json`, NitroBundle.TEXT_ENCODER.encode(JSON.stringify(newAssetData)));
+        bundle.addFile(`${ newAssetData.name }.png`, newSpritesheet.spritesheet as ArrayBuffer);
+
+        const blob = new Blob([ bundle.toBuffer() ], { type: 'application/octet-stream' });
+
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `${ newAssetData.name }.nitro`;
+        link.click();
+    }, [ spritesheet, assetData ]);
+
+    const importBundle = useCallback(async (file: File) =>
     {
         await new Promise((resolve, reject) =>
         {
@@ -49,23 +83,15 @@ const useNitroBundleHook = () =>
 
                     setAssetData(bundle.file ?? null);
 
+                    console.log(bundle.file);
+
                     if(data.spritesheet && Object.keys(data.spritesheet).length)
                     {
                         const spritesheet = new Spritesheet(bundle.texture, data.spritesheet);
 
                         await spritesheet.parse();
 
-                        for(const name in spritesheet.textures)
-                        {
-                            const texture = spritesheet.textures[name];
-
-                            const url = TextureUtils.generateImageUrl(texture);
-                        }
-
-                        setTexture(new Texture(spritesheet.textureSource));
                         setSpritesheet(spritesheet);
-
-                        GetAssetManager().createCollection(bundle.file, spritesheet);
                     }
 
                     resolve(true);
@@ -75,7 +101,7 @@ const useNitroBundleHook = () =>
     }, []);
     
 
-    return { assetData, texture, spritesheet, loadBundleFromFile };
+    return { assetData, setAssetData, spritesheet, importBundle, exportBundle };
 }
 
 export const useNitroBundle = () => useBetween(useNitroBundleHook);

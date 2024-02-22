@@ -163,15 +163,6 @@ export class RoomEngine implements IRoomEngine
 
         if(!instance) return;
 
-        if(roomMap.restrictsDragging)
-        {
-            this._roomAllowsDragging = false;
-        }
-        else
-        {
-            this._roomAllowsDragging = true;
-        }
-
         NitroEventDispatcher.dispatchEvent(new RoomEngineEvent(RoomEngineEvent.INITIALIZED, roomId));
     }
 

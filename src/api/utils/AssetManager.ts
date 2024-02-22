@@ -102,7 +102,7 @@ export class AssetManager
         try
         {
             const response = await fetch(url);
-
+            
             if(response.status !== 200) return;
 
             let contentType = response.headers.get('Content-Type');
