@@ -12,5 +12,3 @@ export * from './visualization';
 export * from './visualization/data';
 export * from './visualization/furniture';
 export * from './visualization/room';
-export * from './visualization/room/mask';
-export * from './visualization/room/utils';

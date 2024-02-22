@@ -1,4 +1,3 @@
-export * from './IPlaneDrawingData';
 export * from './IPlaneRasterizer';
 export * from './IPlaneVisualization';
 export * from './IRoomMapData';

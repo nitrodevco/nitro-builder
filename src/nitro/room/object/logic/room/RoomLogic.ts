@@ -2,13 +2,12 @@ import { Point } from 'pixi.js';
 import { ColorConverter, IRoomGeometry, IRoomObjectModel, MouseEventType, RoomObjectVariable, Vector3d } from '../../../../../api';
 import { RoomObjectEvent, RoomObjectMouseEvent, RoomObjectTileMouseEvent, RoomObjectWallMouseEvent, RoomSpriteMouseEvent } from '../../../../events';
 import { ObjectRoomColorUpdateMessage, ObjectRoomFloorHoleUpdateMessage, ObjectRoomMapUpdateMessage, ObjectRoomMaskUpdateMessage, ObjectRoomPlanePropertyUpdateMessage, ObjectRoomPlaneVisibilityUpdateMessage, ObjectRoomUpdateMessage, RoomObjectUpdateMessage } from '../../../messages';
-import { RoomMapData, RoomPlaneBitmapMaskData, RoomPlaneBitmapMaskParser, RoomPlaneData, RoomPlaneParser } from '../../visualization';
+import { RoomMapData, RoomPlaneData, RoomPlaneParser } from '../../visualization';
 import { RoomObjectLogicBase } from '../RoomObjectLogicBase';
 
 export class RoomLogic extends RoomObjectLogicBase
 {
     private _planeParser: RoomPlaneParser;
-    private _planeBitmapMaskParser: RoomPlaneBitmapMaskParser;
     private _color: number;
     private _light: number;
     private _originalColor: number;
@@ -26,7 +25,6 @@ export class RoomLogic extends RoomObjectLogicBase
         super();
 
         this._planeParser = new RoomPlaneParser();
-        this._planeBitmapMaskParser = new RoomPlaneBitmapMaskParser();
         this._color = 0xFFFFFF;
         this._light = 0xFF;
         this._originalColor = 0xFFFFFF;
@@ -56,13 +54,6 @@ export class RoomLogic extends RoomObjectLogicBase
             this._planeParser.dispose();
 
             this._planeParser = null;
-        }
-
-        if(this._planeBitmapMaskParser)
-        {
-            this._planeBitmapMaskParser.dispose();
-
-            this._planeBitmapMaskParser = null;
         }
     }
 
@@ -235,21 +226,18 @@ export class RoomLogic extends RoomObjectLogicBase
         switch(message.type)
         {
             case ObjectRoomMaskUpdateMessage.ADD_MASK:
-                maskType = RoomPlaneBitmapMaskData.WINDOW;
+                //maskType = RoomPlaneBitmapMaskData.WINDOW;
 
-                if(message.maskCategory === ObjectRoomMaskUpdateMessage.HOLE) maskType = RoomPlaneBitmapMaskData.HOLE;
-
-                this._planeBitmapMaskParser.addMask(message.maskId, message.maskType, message.maskLocation, maskType);
+                //if(message.maskCategory === ObjectRoomMaskUpdateMessage.HOLE) maskType = RoomPlaneBitmapMaskData.HOLE;
 
                 update = true;
                 break;
             case ObjectRoomMaskUpdateMessage.REMOVE_MASK:
-                update = this._planeBitmapMaskParser.removeMask(message.maskId);
                 break;
 
         }
 
-        if(update) _arg_2.setValue(RoomObjectVariable.ROOM_PLANE_MASK_XML, this._planeBitmapMaskParser.getXML());
+        //if(update) _arg_2.setValue(RoomObjectVariable.ROOM_PLANE_MASK_XML, this._planeBitmapMaskParser.getXML());
     }
 
     private onObjectRoomPlaneVisibilityUpdateMessage(message: ObjectRoomPlaneVisibilityUpdateMessage, model: IRoomObjectModel): void

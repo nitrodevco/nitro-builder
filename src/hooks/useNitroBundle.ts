@@ -2,7 +2,7 @@ import { Spritesheet, Texture } from 'pixi.js';
 import { useCallback, useState } from 'react';
 import { useBetween } from 'use-between';
 import { IAssetData, NitroBundle } from '../api';
-import { CreateSpritesheet } from '../utils';
+import { ExportNitroBundle } from '../utils';
 
 const useNitroBundleHook = () =>
 {
@@ -11,36 +11,13 @@ const useNitroBundleHook = () =>
 
     const exportBundle = useCallback(async () =>
     {
-        if(!spritesheet) return null;
+        if(!assetData) return;
 
-        let textures: Texture[] = [];
+        const textures: Texture[] = [];
 
-        for(const name in spritesheet.textures)
-        {
-            const texture = spritesheet.textures[name];
+        for(const name in spritesheet.textures) textures.push(spritesheet.textures[name]);
 
-            if(!texture) continue;
-
-            textures.push(texture);
-        }
-
-        const newSpritesheet = await CreateSpritesheet(textures);
-
-        const newAssetData = { ...assetData };
-
-        newAssetData.spritesheet = newSpritesheet.spritesheetData;
-
-        const bundle = new NitroBundle();
-
-        bundle.addFile(`${ newAssetData.name }.json`, NitroBundle.TEXT_ENCODER.encode(JSON.stringify(newAssetData)));
-        bundle.addFile(`${ newAssetData.name }.png`, newSpritesheet.spritesheet as ArrayBuffer);
-
-        const blob = new Blob([ bundle.toBuffer() ], { type: 'application/octet-stream' });
-
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = `${ newAssetData.name }.nitro`;
-        link.click();
+        await ExportNitroBundle(assetData.name, assetData, textures);
     }, [ spritesheet, assetData ]);
 
     const importBundle = useCallback(async (file: File) =>
@@ -72,27 +49,26 @@ const useNitroBundleHook = () =>
                 (async () =>
                 {
                     const bundle = await NitroBundle.from(result);
-                    const data = bundle.file;
+                    const newAssetData = bundle.file;
 
-                    if(!data)
+                    let newSpritesheet: Spritesheet = null;
+
+                    if(!newAssetData)
                     {
                         reject('invalid_bundle');
 
                         return;
                     }
 
-                    setAssetData(bundle.file ?? null);
-
-                    console.log(bundle.file);
-
-                    if(data.spritesheet && Object.keys(data.spritesheet).length)
+                    if(newAssetData.spritesheet && Object.keys(newAssetData.spritesheet).length)
                     {
-                        const spritesheet = new Spritesheet(bundle.texture, data.spritesheet);
+                        newSpritesheet = new Spritesheet(bundle.texture, newAssetData.spritesheet);
 
-                        await spritesheet.parse();
-
-                        setSpritesheet(spritesheet);
+                        await newSpritesheet.parse();
                     }
+
+                    setAssetData(newAssetData);
+                    setSpritesheet(newSpritesheet)
 
                     resolve(true);
                 })();

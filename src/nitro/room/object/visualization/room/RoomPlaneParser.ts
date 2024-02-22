@@ -1168,7 +1168,7 @@ export class RoomPlaneParser
     private addWall(k: IVector3D, _arg_2: IVector3D, _arg_3: IVector3D, _arg_4: IVector3D, _arg_5: boolean, _arg_6: boolean, _arg_7: boolean): void
     {
         this.addPlane(RoomPlaneData.PLANE_WALL, k, _arg_2, _arg_3, [ _arg_4 ]);
-        this.addPlane(RoomPlaneData.PLANE_LANDSCAPE, k, _arg_2, _arg_3, [ _arg_4 ]);
+        //this.addPlane(RoomPlaneData.PLANE_LANDSCAPE, k, _arg_2, _arg_3, [ _arg_4 ]);
         const _local_8: number = (RoomPlaneParser.WALL_THICKNESS * this._wallThicknessMultiplier);
         const _local_9: number = (RoomPlaneParser.FLOOR_THICKNESS * this._floorThicknessMultiplier);
         const _local_10: Vector3d = Vector3d.crossProduct(_arg_2, _arg_3);
@@ -1441,61 +1441,6 @@ export class RoomPlaneParser
         if(!planeData) return RoomPlaneData.PLANE_UNDEFINED;
 
         return planeData.type;
-    }
-
-    public getPlaneMaskCount(k: number): number
-    {
-        if(((k < 0) || (k >= this.planeCount))) return 0;
-
-        const planeData = this._planes[k];
-
-        if(!planeData) return 0;
-
-        return planeData.maskCount;
-    }
-
-    public getPlaneMaskLeftSideLoc(k: number, _arg_2: number): number
-    {
-        if(((k < 0) || (k >= this.planeCount))) return -1;
-
-        const planeData = this._planes[k];
-
-        if(!planeData) return -1;
-
-        return planeData.getMaskLeftSideLoc(_arg_2);
-    }
-
-    public getPlaneMaskRightSideLoc(k: number, _arg_2: number): number
-    {
-        if(((k < 0) || (k >= this.planeCount))) return -1;
-
-        const planeData = this._planes[k];
-
-        if(!planeData) return -1;
-
-        return planeData.getMaskRightSideLoc(_arg_2);
-    }
-
-    public getPlaneMaskLeftSideLength(k: number, _arg_2: number): number
-    {
-        if(((k < 0) || (k >= this.planeCount))) return -1;
-
-        const planeData = this._planes[k];
-
-        if(!planeData) return -1;
-
-        return planeData.getMaskLeftSideLength(_arg_2);
-    }
-
-    public getPlaneMaskRightSideLength(k: number, _arg_2: number): number
-    {
-        if(((k < 0) || (k >= this.planeCount))) return -1;
-
-        const planeData = this._planes[k];
-
-        if(!planeData) return -1;
-
-        return planeData.getMaskRightSideLength(_arg_2);
     }
 
     public addFloorHole(k: number, _arg_2: number, _arg_3: number, _arg_4: number, _arg_5: number): void

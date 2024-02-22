@@ -1,4 +1,4 @@
-﻿import { ToInt32 } from '../../../../../../api';
+﻿import { ToInt32 } from '../../../../../api';
 
 export class Randomizer
 {

@@ -1,11 +1,9 @@
-import { Container, Matrix, Point, Sprite, Texture, TilingSprite } from 'pixi.js';
+import { Container, Matrix, Point, Texture, TilingSprite } from 'pixi.js';
 import { GetAssetManager, IRoomGeometry, IRoomPlane, IVector3D, TextureUtils, Vector3d } from '../../../../../api';
-import { RoomGeometry } from '../../../utils';
-import { Randomizer } from './utils';
+import { Randomizer } from './Randomizer';
 
 export class RoomPlane implements IRoomPlane
 {
-    private static ZERO_POINT: Point = new Point(0, 0);
     public static TYPE_UNDEFINED: number = 0;
     public static TYPE_WALL: number = 1;
     public static TYPE_FLOOR: number = 2;
@@ -20,19 +18,13 @@ export class RoomPlane implements IRoomPlane
     private _rightSide: Vector3d;
     private _normal: Vector3d;
     private _secondaryNormals: Vector3d[];
-    private _geometryUpdateId: number;
     private _type: number;
     private _isVisible: boolean;
-    private _hasTexture: boolean;
     private _offset: Point;
     private _relativeDepth: number;
     private _color: number;
     private _id: string;
     private _uniqueId: number;
-    private _textureOffsetX: number;
-    private _textureOffsetY: number;
-    private _textureMaxX: number;
-    private _textureMaxY: number;
     private _cornerA: Vector3d;
     private _cornerB: Vector3d;
     private _cornerC: Vector3d;
@@ -79,8 +71,6 @@ export class RoomPlane implements IRoomPlane
         this._disposed = false;
         this._isVisible = false;
         this._id = null;
-        this._hasTexture = true;
-        this._geometryUpdateId = -1;
         this._offset = new Point();
         this._relativeDepth = 0;
         this._type = type;
@@ -92,10 +82,6 @@ export class RoomPlane implements IRoomPlane
         this._cornerD = new Vector3d();
         this._width = 0;
         this._height = 0;
-        this._textureOffsetX = textureOffsetX;
-        this._textureOffsetY = textureOffsetY;
-        this._textureMaxX = textureMaxX;
-        this._textureMaxY = textureMaxY;
         this._uniqueId = ++RoomPlane._uniqueIdCounter;
     }
 
@@ -114,141 +100,62 @@ export class RoomPlane implements IRoomPlane
         this._disposed = true;
     }
 
-    private updatePlane(geometry: IRoomGeometry, timeSinceStartMs: number, width: number, height: number, normal: IVector3D): Container
-    {
-        const buildGeometry = (size: number, horizontalAngle: number, verticalAngle: number): IRoomGeometry =>
-        {
-            horizontalAngle = Math.abs(horizontalAngle);
-            if(horizontalAngle > 90) horizontalAngle = 90;
-
-            verticalAngle = Math.abs(verticalAngle);
-            if(verticalAngle > 90) verticalAngle = 90;
-
-            return new RoomGeometry(size, new Vector3d(horizontalAngle, verticalAngle), new Vector3d(-10, 0, 0));
-        }
-
-        const planeGeometry = buildGeometry(geometry.scale, 45, 30);
-
-        switch(this._type)
-        {
-            case RoomPlane.TYPE_FLOOR: {
-                const _local_10 = planeGeometry.getScreenPoint(new Vector3d(0, 0, 0));
-                const _local_11 = planeGeometry.getScreenPoint(new Vector3d(0, (height / planeGeometry.scale), 0));
-                const _local_12 = planeGeometry.getScreenPoint(new Vector3d((width / planeGeometry.scale), 0, 0));
-
-                /* if(_local_10 && _local_11 && _local_12)
-                {
-                    width = Math.round(Math.abs((_local_10.x - _local_12.x)));
-                    height = Math.round(Math.abs((_local_10.x - _local_11.x)));
-                } */
-
-                return new TilingSprite({
-                    texture: GetAssetManager().getTexture('room_floor_texture_64_0_floor_basic'),
-                    width: width,
-                    height: height,
-                    applyAnchorToTexture: true
-                });
-            }
-            case RoomPlane.TYPE_WALL: {
-                const _local_8 = planeGeometry.getScreenPoint(new Vector3d(0, 0, 0));
-                const _local_9 = planeGeometry.getScreenPoint(new Vector3d(0, 0, (height / planeGeometry.scale)));
-                const _local_10 = planeGeometry.getScreenPoint(new Vector3d(0, (width / planeGeometry.scale), 0));
-
-                /* if(_local_8 && _local_9 && _local_10)
-                {
-                    width = Math.round(Math.abs((_local_8.x - _local_10.x)));
-                    height = Math.round(Math.abs((_local_8.y - _local_9.y)));
-                } */
-
-                return new TilingSprite({
-                    texture: GetAssetManager().getTexture('room_wall_texture_64_0_wall_lively'),
-                    width: width,
-                    height: height,
-                    applyAnchorToTexture: true
-                });
-            }
-        }
-
-        return new TilingSprite({
-            texture: Texture.WHITE,
-            width: width,
-            height: height,
-            applyAnchorToTexture: true
-        });
-    }
-
     public update(geometry: IRoomGeometry, timeSinceStartMs: number): boolean
     {
         if(!geometry || this._disposed) return false;
 
-        let geometryChanged = false;
+        let cosAngle = 0;
 
-        if(this._geometryUpdateId != geometry.updateId) geometryChanged = true;
+        cosAngle = Vector3d.cosAngle(geometry.directionAxis, this.normal);
 
-        if(!geometryChanged || !this._canBeVisible)
+        if(cosAngle > -0.001)
         {
-            if(!this.visible) return false;
+            if(this._isVisible)
+            {
+                this._isVisible = false;
+
+                return true;
+            }
+
+            return false;
         }
 
-        if(geometryChanged)
-        {
-            let cosAngle = 0;
+        let i = 0;
 
-            cosAngle = Vector3d.cosAngle(geometry.directionAxis, this.normal);
+        while(i < this._secondaryNormals.length)
+        {
+            cosAngle = Vector3d.cosAngle(geometry.directionAxis, this._secondaryNormals[i]);
 
             if(cosAngle > -0.001)
             {
                 if(this._isVisible)
                 {
                     this._isVisible = false;
-
                     return true;
                 }
 
                 return false;
             }
 
-            let i = 0;
-
-            while(i < this._secondaryNormals.length)
-            {
-                cosAngle = Vector3d.cosAngle(geometry.directionAxis, this._secondaryNormals[i]);
-
-                if(cosAngle > -0.001)
-                {
-                    if(this._isVisible)
-                    {
-                        this._isVisible = false;
-                        return true;
-                    }
-
-                    return false;
-                }
-
-                i++;
-            }
-
-            this.updateCorners(geometry);
-
-            const originPos = geometry.getScreenPosition(this._origin);
-            const originZ = originPos.z;
-
-            let relativeDepth = (Math.max(this._cornerA.z, this._cornerB.z, this._cornerC.z, this._cornerD.z) - originZ);
-
-            if(this._type === RoomPlane.TYPE_FLOOR)
-            {
-                relativeDepth = (relativeDepth - ((this._location.z + Math.min(0, this._leftSide.z, this._rightSide.z)) * 8));
-            }
-
-            if(this._type === RoomPlane.TYPE_LANDSCAPE)
-            {
-                relativeDepth = (relativeDepth + 0.02);
-            }
-
-            this._relativeDepth = relativeDepth;
-            this._isVisible = true;
-            this._geometryUpdateId = geometry.updateId;
+            i++;
         }
+
+        this.updateCorners(geometry);
+
+        let relativeDepth = (Math.max(this._cornerA.z, this._cornerB.z, this._cornerC.z, this._cornerD.z) - geometry.getScreenPosition(this._origin).z);
+
+        switch(this._type)
+        {
+            case RoomPlane.TYPE_FLOOR:
+                relativeDepth = (relativeDepth - ((this._location.z + Math.min(0, this._leftSide.z, this._rightSide.z)) * 8));
+                break;
+            case RoomPlane.TYPE_LANDSCAPE:
+                relativeDepth = (relativeDepth + 0.02);
+                break;
+        }
+
+        this._relativeDepth = relativeDepth;
+        this._isVisible = true;
 
         Randomizer.setSeed(this._randomSeed);
 
@@ -256,15 +163,47 @@ export class RoomPlane implements IRoomPlane
         const height = (this._rightSide.length * geometry.scale);
         const normal = geometry.getCoordinatePosition(this._normal);
 
-        const planeSprite = this.updatePlane(geometry, timeSinceStartMs, width, height, normal);
-        const planeTexture = TextureUtils.createAndWriteRenderTexture(this._width, this._height, planeSprite, this.getMatrixForDimensions(width, height)) as Texture;
-        const newPlaneSprite = new Sprite(planeTexture);
+        const planeContainer = new Container();
 
-        const container = new Container();
+        let planeSprite: Container = null;
 
-        container.addChild(newPlaneSprite);
+        switch(this._type)
+        {
+            case RoomPlane.TYPE_FLOOR: {
+                planeSprite = new TilingSprite({
+                    texture: GetAssetManager().getTexture('floor_texture'),
+                    width: width,
+                    height: height,
+                    applyAnchorToTexture: true
+                });
 
-        this._planeTexture = TextureUtils.createAndWriteRenderTexture(this._width, this._height, container) as Texture;
+                planeSprite.tint = window.NitroBuilderConfig['floor.color'];
+                break;
+            }
+            case RoomPlane.TYPE_WALL: {
+                planeSprite = new TilingSprite({
+                    texture: GetAssetManager().getTexture('wall_texture'),
+                    width: width,
+                    height: height,
+                    applyAnchorToTexture: true
+                });
+
+                planeSprite.tint = window.NitroBuilderConfig['wall.color'];
+                break;
+            }
+            default: {
+                planeSprite = new TilingSprite({
+                    texture: Texture.WHITE,
+                    width: width,
+                    height: height,
+                    applyAnchorToTexture: true
+                });
+            }
+        }
+
+        if(planeSprite) planeContainer.addChild(planeSprite);
+
+        this._planeTexture = TextureUtils.createAndWriteRenderTexture(this._width, this._height, planeContainer, this.getMatrixForDimensions(width, height)) as Texture;
 
         return true;
     }
@@ -275,6 +214,7 @@ export class RoomPlane implements IRoomPlane
         this._cornerB.assign(geometry.getScreenPosition(Vector3d.sum(this._location, this._rightSide)));
         this._cornerC.assign(geometry.getScreenPosition(Vector3d.sum(Vector3d.sum(this._location, this._leftSide), this._rightSide)));
         this._cornerD.assign(geometry.getScreenPosition(Vector3d.sum(this._location, this._leftSide)));
+
         this._offset = geometry.getScreenPoint(this._origin);
         this._cornerA.x = Math.round(this._cornerA.x);
         this._cornerA.y = Math.round(this._cornerA.y);
@@ -396,16 +336,6 @@ export class RoomPlane implements IRoomPlane
     public get normal(): IVector3D
     {
         return this._normal;
-    }
-
-    public get hasTexture(): boolean
-    {
-        return this._hasTexture;
-    }
-
-    public set hasTexture(k: boolean)
-    {
-        this._hasTexture = k;
     }
 
     public set id(k: string)

@@ -1,5 +1,4 @@
 ﻿import { IVector3D, Vector3d } from '../../../../../api';
-import { RoomPlaneMaskData } from './RoomPlaneMaskData';
 
 export class RoomPlaneData
 {
@@ -16,7 +15,6 @@ export class RoomPlaneData
     private _normal: Vector3d = null;
     private _normalDirection: Vector3d = null;
     private _secondaryNormals: Vector3d[];
-    private _masks: RoomPlaneMaskData[];
 
     constructor(k: number, _arg_2: IVector3D, _arg_3: IVector3D, _arg_4: IVector3D, _arg_5: IVector3D[])
     {
@@ -29,7 +27,6 @@ export class RoomPlaneData
         let _local_12: IVector3D;
         let _local_13: Vector3d;
         this._secondaryNormals = [];
-        this._masks = [];
         this._loc = new Vector3d();
         this._loc.assign(_arg_2);
         this._leftSide = new Vector3d();
@@ -128,11 +125,6 @@ export class RoomPlaneData
         return this._secondaryNormals.length;
     }
 
-    public get maskCount(): number
-    {
-        return this._masks.length;
-    }
-
     public getSecondaryNormal(k: number): IVector3D
     {
         if(((k < 0) || (k >= this.secondaryNormalCount)))
@@ -142,60 +134,5 @@ export class RoomPlaneData
         const _local_2: Vector3d = new Vector3d();
         _local_2.assign((this._secondaryNormals[k] as IVector3D));
         return _local_2;
-    }
-
-    public addMask(k: number, _arg_2: number, _arg_3: number, _arg_4: number): void
-    {
-        const _local_5: RoomPlaneMaskData = new RoomPlaneMaskData(k, _arg_2, _arg_3, _arg_4);
-        this._masks.push(_local_5);
-    }
-
-    private getMask(k: number): RoomPlaneMaskData
-    {
-        if(((k < 0) || (k >= this.maskCount)))
-        {
-            return null;
-        }
-        return this._masks[k];
-    }
-
-    public getMaskLeftSideLoc(k: number): number
-    {
-        const _local_2: RoomPlaneMaskData = this.getMask(k);
-        if(_local_2 != null)
-        {
-            return _local_2.leftSideLoc;
-        }
-        return -1;
-    }
-
-    public getMaskRightSideLoc(k: number): number
-    {
-        const _local_2: RoomPlaneMaskData = this.getMask(k);
-        if(_local_2 != null)
-        {
-            return _local_2.rightSideLoc;
-        }
-        return -1;
-    }
-
-    public getMaskLeftSideLength(k: number): number
-    {
-        const _local_2: RoomPlaneMaskData = this.getMask(k);
-        if(_local_2 != null)
-        {
-            return _local_2.leftSideLength;
-        }
-        return -1;
-    }
-
-    public getMaskRightSideLength(k: number): number
-    {
-        const _local_2: RoomPlaneMaskData = this.getMask(k);
-        if(_local_2 != null)
-        {
-            return _local_2.rightSideLength;
-        }
-        return -1;
     }
 }

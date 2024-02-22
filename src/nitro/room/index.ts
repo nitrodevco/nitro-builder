@@ -19,8 +19,6 @@ export * from './object/visualization';
 export * from './object/visualization/data';
 export * from './object/visualization/furniture';
 export * from './object/visualization/room';
-export * from './object/visualization/room/mask';
-export * from './object/visualization/room/utils';
 export * from './renderer';
 export * from './renderer/cache';
 export * from './renderer/utils';

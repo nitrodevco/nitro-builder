@@ -1,4 +1,4 @@
-import { IPetCustomPart } from '../../../api';
+import { IPetCustomPart } from '../../api';
 
 export class PetCustomPart implements IPetCustomPart
 {

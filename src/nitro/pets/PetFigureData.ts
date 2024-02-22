@@ -1,4 +1,4 @@
-import { IPetCustomPart } from '../../../api';
+import { IPetCustomPart } from '../../api';
 import { PetCustomPart } from './PetCustomPart';
 
 export class PetFigureData

@@ -91,8 +91,6 @@ export class RoomManager implements IRoomManager, IRoomInstanceContainer
             {
                 isLoading = true;
 
-                console.log('this asset doesnt exist', type);
-
                 if(!asset) return null;
             }
 

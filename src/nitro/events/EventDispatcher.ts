@@ -49,7 +49,7 @@ export class EventDispatcher implements IEventDispatcher
     {
         if(!event) return false;
 
-        console.log('Dispatched Event', event.type);
+        //console.log('Dispatched Event', event.type);
 
         this.processEvent(event);
 
