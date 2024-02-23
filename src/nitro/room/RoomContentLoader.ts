@@ -197,7 +197,15 @@ export class RoomContentLoader implements IRoomContentLoader
     {
         if(!name) return null;
 
-        return GetAssetManager().getCollection(name);
+        const collection = GetAssetManager().getCollection(name);
+
+        if(!collection) return null;
+
+        if(!this._activeObjects[name]) this._activeObjects[name] = 1;
+
+        // if wall item, this._wallItems[name] = 1;
+
+        return collection;
     }
 
     public getImage(name: string): Texture

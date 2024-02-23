@@ -1,34 +1,19 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import { GetAssetManager, GetPixi, RoomVariableEnum, Vector3d } from '../../../api';
 import { useNitroBundle, useRoomPreviewer } from '../../../hooks';
 import { GetRoomEngine, RoomGeometry, RoomPreviewer } from '../../../nitro';
 import { DispatchMouseEvent } from '../../../utils';
-import { SetActiveRoomId } from '../../../utils/SetActiveRoomId';
+import { EditorToolsComponent } from './EditorToolsComponent';
 
-export const PreviewComponent: FC<{}> = props =>
+export const EditorCanvasComponent: FC<{}> = props =>
 {
     const { assetData = null, spritesheet = null } = useNitroBundle();
     const { roomPreviewer } = useRoomPreviewer();
     const elementRef = useRef<HTMLDivElement>();
 
-    useEffect(() =>
+    const centerRoom = useCallback(() =>
     {
-        if(!roomPreviewer) return;
-
-        SetActiveRoomId(roomPreviewer.roomId);
-
-        const pixi = GetPixi();
-        const canvas = pixi.canvas;
         const roomEngine = GetRoomEngine();
-        const width = Math.floor(elementRef.current.clientWidth);
-        const height = Math.floor(elementRef.current.clientHeight);
-
-        pixi.renderer.resize(width, height);
-
-        const container = roomPreviewer.getRoomCanvas(width, height);
-
-        pixi.stage.addChild(container);
-
         const geometry = roomEngine.getRoomInstanceGeometry(roomPreviewer.roomId, RoomPreviewer.PREVIEW_CANVAS_ID) as RoomGeometry;
 
         if(geometry)
@@ -50,41 +35,67 @@ export const PreviewComponent: FC<{}> = props =>
 
             geometry.location = new Vector3d(x, y, z);
         }
+    }, [ roomPreviewer ]);
 
-        const element = elementRef.current;
+    useEffect(() =>
+    {
+        if(!roomPreviewer) return;
 
-        if(!element) return;
+        const element = elementRef.current.parentElement;
+        const width = Math.floor(element.clientWidth);
+        const height = Math.floor(element.clientHeight);
+        const pixi = GetPixi();
+        const canvas = pixi.canvas;
 
         canvas.onclick = event => DispatchMouseEvent(event);
         canvas.onmousemove = event => DispatchMouseEvent(event);
         canvas.onmousedown = event => DispatchMouseEvent(event);
         canvas.onmouseup = event => DispatchMouseEvent(event);
+        canvas.style['imageRendering'] = 'pixelated';
+
+        pixi.renderer.resize(width, height);
+        pixi.render();
 
         element.appendChild(canvas);
+    }, [ roomPreviewer ]);
+
+    useEffect(() =>
+    {
+        if(!roomPreviewer) return;
+        
+        const element = elementRef.current.parentElement;
+        const width = Math.floor(element.clientWidth);
+        const height = Math.floor(element.clientHeight);
+        const pixi = GetPixi();
+        const container = roomPreviewer.getRoomCanvas(width, height);
+
+        pixi.stage.addChild(container);
+
+        centerRoom();
+    }, [ roomPreviewer, centerRoom ]);
+
+    useEffect(() =>
+    {
+        const element = elementRef.current.parentElement;
 
         const resizeObserver = new ResizeObserver(() =>
         {
-            if(!roomPreviewer || !elementRef.current) return;
+            if(!roomPreviewer || !element) return;
 
-            const width = Math.floor(elementRef.current.clientWidth);
-            const height = Math.floor(elementRef.current.clientHeight);
+            const width = Math.floor(elementRef.current.parentElement.clientWidth);
+            const height = Math.floor(elementRef.current.parentElement.clientHeight);
 
             roomPreviewer.modifyRoomCanvas(width, height);
 
-            pixi.renderer.resize(width, height);
-            pixi.render();
+            GetPixi().renderer.resize(width, height);
+            GetPixi().render();
         });
         
-        resizeObserver.observe(elementRef.current);
+        resizeObserver.observe(element);
 
         return () =>
         {
             resizeObserver.disconnect();
-
-            pixi.stage.removeChild(container);
-
-            element.removeChild(pixi.canvas);
-            
         }
     }, [ roomPreviewer ]);
 
@@ -103,6 +114,8 @@ export const PreviewComponent: FC<{}> = props =>
     }, [ assetData, spritesheet, roomPreviewer ]);
 
     return (
-        <div className="w-full h-full" ref={ elementRef } />
+        <div className="w-full h-full" ref={ elementRef }>.
+            <EditorToolsComponent />
+        </div>
     );
 }

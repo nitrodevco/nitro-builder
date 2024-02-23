@@ -285,11 +285,9 @@ export class RoomSpriteCanvas implements IRoomRenderingCanvas
         }
     }
 
-    public setScale(scale: number, point: Point = null, offsetPoint: Point = null, override: boolean = false, asDelta: boolean = false): void
+    public setScale(scale: number, point: Point = null, offsetPoint: Point = null): void
     {
         if(!this._master || !this._display) return;
-
-        if(this._restrictsScaling && !override) return;
 
         if(!point) point = new Point((this._width / 2), (this._height / 2));
 
@@ -297,14 +295,7 @@ export class RoomSpriteCanvas implements IRoomRenderingCanvas
 
         point = this._display.toLocal(point);
 
-        if(asDelta)
-        {
-            this._scale *= scale;
-        }
-        else
-        {
-            this._scale = scale;
-        }
+        this._scale = scale;
 
         this.screenOffsetX = (offsetPoint.x - (point.x * this._scale));
         this.screenOffsetY = (offsetPoint.y - (point.y * this._scale));

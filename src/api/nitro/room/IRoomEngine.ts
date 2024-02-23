@@ -93,7 +93,7 @@ export interface IRoomEngine
     setRoomInstanceModelName(roomId: number, name: string): void;
     setRoomInstanceRenderingCanvasMask(roomId: number, canvasId: number, flag: boolean): void;
     setRoomInstanceRenderingCanvasOffset(roomId: number, canvasId: number, point: Point): boolean;
-    setRoomInstanceRenderingCanvasScale(roomId: number, canvasId: number, scale: number, point?: Point, offsetPoint?: Point, override?: boolean, asDelta?: boolean): void;
+    setRoomInstanceRenderingCanvasScale(roomId: number, canvasId: number, scale: number, point?: Point, offsetPoint?: Point): void;
     setRoomSessionOwnUser(roomId: number, objectId: number): void;
     setSelectedAvatar(roomId: number, objectId: number): void;
     setSelectedRoomObjectData(roomId: number, data: ISelectedRoomObjectData): void;

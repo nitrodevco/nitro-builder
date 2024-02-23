@@ -407,10 +407,7 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
                             {
                                 if(category === RoomObjectCategory.FLOOR)
                                 {
-                                    if(NitroEventDispatcher)
-                                    {
-                                        NitroEventDispatcher.dispatchEvent(new RoomEngineObjectEvent(RoomEngineObjectEvent.REQUEST_ROTATE, roomId, event.objectId, category));
-                                    }
+                                    this.modifyRoomObject(roomId, event.objectId, category, RoomObjectOperationType.OBJECT_ROTATE_POSITIVE);
                                 }
                             }
 
@@ -545,7 +542,7 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
                 {
                     if((event.altKey && !event.ctrlKey && !event.shiftKey) || this.decorateModeMove(event))
                     {
-                        if(NitroEventDispatcher) NitroEventDispatcher.dispatchEvent(new RoomEngineObjectEvent(RoomEngineObjectEvent.REQUEST_MOVE, roomId, event.objectId, category));
+                        this.modifyRoomObject(roomId, event.objectId, category, RoomObjectOperationType.OBJECT_MOVE);
                     }
                 }
                 return;
@@ -1029,6 +1026,7 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
 
             if(!(((event instanceof RoomObjectTileMouseEvent)) && (this.handleFurnitureMove(roomObject, selectedData, Math.trunc(event.tileX + 0.5), Math.trunc(event.tileY + 0.5), stackingHeightMap))))
             {
+                console.log('doooo')
                 this.handleFurnitureMove(roomObject, selectedData, selectedData.loc.x, selectedData.loc.y, stackingHeightMap);
 
                 _local_6 = false;
@@ -1626,41 +1624,13 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
             case RoomObjectOperationType.OBJECT_ROTATE_NEGATIVE: {
                 let direction = 0;
 
-                if(operation == RoomObjectOperationType.OBJECT_ROTATE_NEGATIVE)
-                {
-                    direction = this.getValidRoomObjectDirection(roomObject, false);
-                }
-                else
-                {
-                    direction = this.getValidRoomObjectDirection(roomObject, true);
-                }
+                direction = this.getValidRoomObjectDirection(roomObject, (operation == RoomObjectOperationType.OBJECT_ROTATE_NEGATIVE) ? false : true);
 
                 const x = roomObject.getLocation().x;
                 const y = roomObject.getLocation().y;
+                const z = roomObject.getLocation().z;
 
-                if(this.isValidLocation(roomObject, new Vector3d(direction), this._roomEngine.getFurnitureStackingHeightMap(roomId)))
-                {
-                    direction = Math.trunc((direction / 45));
-
-                    if(roomObject.type === RoomObjectUserType.MONSTER_PLANT)
-                    {
-                        const roomSession = this._roomEngine.roomSessionManager.getSession(roomId);
-
-                        if(roomSession)
-                        {
-                            const userData = roomSession.userDataManager.getUserDataByIndex(objectId);
-
-                            if(userData)
-                            {
-                                //this._roomEngine.connection.send(new PetMoveComposer(userData.webID, Math.trunc(x), Math.trunc(y), direction));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //this._roomEngine.connection.send(new FurnitureFloorUpdateComposer(objectId, x, y, direction));
-                    }
-                }
+                this._roomEngine.updateRoomObjectFloor(roomId, objectId, new Vector3d(x, y, z), new Vector3d(direction), roomObject.getState(0), null);
                 break;
             }
             case RoomObjectOperationType.OBJECT_EJECT:
@@ -1697,6 +1667,7 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
                 this._roomEngine.setObjectMoverIconSpriteVisible(false);
                 break;
             case RoomObjectOperationType.OBJECT_MOVE_TO: {
+                console.log('yeee')
                 const selectedData = this.getSelectedRoomObjectData(roomId);
 
                 this.updateSelectedObjectData(roomId, selectedData.id, selectedData.category, selectedData.loc, selectedData.dir, RoomObjectOperationType.OBJECT_MOVE_TO, selectedData.typeId, selectedData.instanceData, selectedData.stuffData, selectedData.state, selectedData.animFrame, selectedData.posture);
@@ -1709,7 +1680,8 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
                     const location = roomObject.getLocation();
                     const direction = (angle / 45);
 
-                    //this._roomEngine.connection.send(new FurnitureFloorUpdateComposer(objectId, location.x, location.y, direction));
+
+                    this._roomEngine.updateRoomObjectFloor(roomId, objectId, new Vector3d(selectedData.loc.x, selectedData.loc.y, selectedData.loc.z), new Vector3d(selectedData.dir.x), null, null);
                 }
 
                 else if(category === RoomObjectCategory.WALL)
@@ -1858,6 +1830,8 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
         _local_11 = (Math.trunc((Math.trunc((direction.x + 45)) % 360) / 90));
 
         if(((_local_11 === 1) || (_local_11 === 3))) [ _local_8, _local_9 ] = [ _local_9, _local_8 ];
+
+        console.log(stackingHeightMap);
 
         if(stackingHeightMap && location)
         {

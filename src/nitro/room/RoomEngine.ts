@@ -343,13 +343,13 @@ export class RoomEngine implements IRoomEngine
         if(roomCanvas) roomCanvas.setMask(flag);
     }
 
-    public setRoomInstanceRenderingCanvasScale(roomId: number, canvasId: number, scale: number, point: Point = null, offsetPoint: Point = null, override: boolean = false, asDelta: boolean = false): void
+    public setRoomInstanceRenderingCanvasScale(roomId: number, canvasId: number, scale: number, point: Point = null, offsetPoint: Point = null): void
     {
         const roomCanvas = this.getRoomInstanceRenderingCanvas(roomId, canvasId);
 
         if(roomCanvas)
         {
-            roomCanvas.setScale(scale, point, offsetPoint, override, asDelta);
+            roomCanvas.setScale(scale, point, offsetPoint);
 
             NitroEventDispatcher.dispatchEvent(new RoomEngineEvent(RoomEngineEvent.ROOM_ZOOMED, roomId));
         }
@@ -872,6 +872,8 @@ export class RoomEngine implements IRoomEngine
             if(object) location = object.getLocation();
 
             if(!location) continue;
+
+            console.log(instanceData.roomId, this._activeRoomId);
 
             if((instanceData.roomId !== this._activeRoomId) || !this._activeRoomIsDragged)
             {

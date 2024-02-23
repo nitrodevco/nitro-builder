@@ -7,6 +7,8 @@ let clickCount = 0;
 
 export const DispatchMouseEvent = (event: MouseEvent, canvasId: number = 1) =>
 {
+    event.preventDefault();
+    
     const x = event.offsetX;
     const y = event.offsetY;
 

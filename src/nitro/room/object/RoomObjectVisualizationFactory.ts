@@ -1,6 +1,6 @@
 import { IAssetData, IObjectVisualizationData, IRoomObjectGraphicVisualization, IRoomObjectVisualizationFactory, RoomObjectVisualizationType } from '../../../api';
 import { RoomObjectSpriteVisualization } from './RoomObjectSpriteVisualization';
-import { FurnitureAnimatedVisualization, FurnitureAnimatedVisualizationData, FurnitureBBVisualization, FurnitureBadgeDisplayVisualization, FurnitureBottleVisualization, FurnitureBuilderPlaceholderVisualization, FurnitureCounterClockVisualization, FurnitureCuboidVisualization, FurnitureExternalImageVisualization, FurnitureFireworksVisualization, FurnitureGiftWrappedFireworksVisualization, FurnitureGiftWrappedVisualization, FurnitureGuildCustomizedVisualization, FurnitureGuildIsometricBadgeVisualization, FurnitureHabboWheelVisualization, FurnitureIsometricBBVisualization, FurniturePartyBeamerVisualization, FurniturePlanetSystemVisualization, FurniturePosterVisualization, FurnitureQueueTileVisualization, FurnitureResettingAnimatedVisualization, FurnitureRoomBackgroundVisualization, FurnitureScoreBoardVisualization, FurnitureSoundBlockVisualization, FurnitureStickieVisualization, FurnitureValRandomizerVisualization, FurnitureVisualization, FurnitureVisualizationData, FurnitureVoteCounterVisualization, FurnitureVoteMajorityVisualization, FurnitureWaterAreaVisualization, FurnitureYoutubeVisualization, RoomVisualization, RoomVisualizationData, TileCursorVisualization } from './visualization';
+import { FurnitureAnimatedVisualization, FurnitureAnimatedVisualizationData, FurnitureBBVisualization, FurnitureBadgeDisplayVisualization, FurnitureBottleVisualization, FurnitureBuilderPlaceholderVisualization, FurnitureCounterClockVisualization, FurnitureCuboidVisualization, FurnitureExternalImageVisualization, FurnitureFireworksVisualization, FurnitureGiftWrappedFireworksVisualization, FurnitureGiftWrappedVisualization, FurnitureGuildCustomizedVisualization, FurnitureGuildIsometricBadgeVisualization, FurnitureHabboWheelVisualization, FurnitureIsometricBBVisualization, FurniturePartyBeamerVisualization, FurniturePlanetSystemVisualization, FurniturePosterVisualization, FurnitureQueueTileVisualization, FurnitureResettingAnimatedVisualization, FurnitureRoomBackgroundVisualization, FurnitureScoreBoardVisualization, FurnitureSoundBlockVisualization, FurnitureStickieVisualization, FurnitureValRandomizerVisualization, FurnitureVisualization, FurnitureVisualizationData, FurnitureVoteCounterVisualization, FurnitureVoteMajorityVisualization, FurnitureWaterAreaVisualization, FurnitureYoutubeVisualization, PetVisualization, PetVisualizationData, RoomVisualization, RoomVisualizationData, TileCursorVisualization } from './visualization';
 
 export class RoomObjectVisualizationFactory implements IRoomObjectVisualizationFactory
 {
@@ -42,7 +42,7 @@ export class RoomObjectVisualizationFactory implements IRoomObjectVisualizationF
                 //visualization = AvatarVisualization;
                 break;
             case RoomObjectVisualizationType.PET_ANIMATED:
-                //visualization = PetVisualization;
+                visualization = PetVisualization;
                 break;
             case RoomObjectVisualizationType.FURNITURE_STATIC:
                 visualization = FurnitureVisualization;
@@ -151,10 +151,6 @@ export class RoomObjectVisualizationFactory implements IRoomObjectVisualizationF
 
     public getVisualizationData(type: string, visualization: string, asset: IAssetData): IObjectVisualizationData
     {
-        const existing = this._visualizationDatas.get(type);
-
-        if(existing) return existing;
-
         let visualizationData: IObjectVisualizationData = null;
 
         switch(visualization)
@@ -205,7 +201,7 @@ export class RoomObjectVisualizationFactory implements IRoomObjectVisualizationF
                 //visualizationData = new AvatarVisualizationData();
                 break;
             case RoomObjectVisualizationType.PET_ANIMATED:
-                //visualizationData = new PetVisualizationData();
+                visualizationData = new PetVisualizationData();
                 break;
         }
 
