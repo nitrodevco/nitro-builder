@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useRef } from 'react';
-import { GetAssetManager, GetPixi, RoomVariableEnum, Vector3d } from '../../../api';
+import { GetAssetManager, GetPixi, RoomObjectCategory, RoomVariableEnum, Vector3d } from '../../../api';
 import { useNitroBundle, useRoomPreviewer } from '../../../hooks';
 import { GetRoomEngine, RoomGeometry, RoomPreviewer } from '../../../nitro';
 import { DispatchMouseEvent } from '../../../utils';
@@ -105,7 +105,14 @@ export const EditorCanvasComponent: FC<{}> = props =>
 
         GetAssetManager().createCollection(assetData, spritesheet);
 
-        roomPreviewer.addFurnitureIntoRoom(assetData.name, new Vector3d(90));
+        roomPreviewer.addFurnitureIntoRoom(assetData.name, new Vector3d(90))
+
+        const camera = GetRoomEngine().getRoomCamera(roomPreviewer.roomId);
+
+        camera.targetId = RoomPreviewer.PREVIEW_OBJECT_ID;
+        camera.targetCategory = RoomObjectCategory.FLOOR;
+
+        camera.activateFollowing(window.NitroBuilderConfig['camera.follow.duration']);
 
         return () =>
         {

@@ -1,6 +1,6 @@
 import { Texture } from 'pixi.js';
-import { IAssetData, NitroBundle } from '../api';
-import { CreateSpritesheet } from './CreateSpritesheet';
+import { IAssetData, NitroBundle } from '..';
+import { CreateSpritesheet } from '../../utils/CreateSpritesheet';
 
 export const ExportNitroBundle = async (name: string, assetData: IAssetData, textures: Texture[]) =>
 {

@@ -1,4 +1,4 @@
-import { IFurnitureStackingHeightMap, ILegacyWallGeometry, ISelectedRoomObjectData } from '../../../api';
+import { IFurnitureStackingHeightMap, ILegacyWallGeometry, IRoomCamera, ISelectedRoomObjectData } from '../../../api';
 import { LegacyWallGeometry } from './LegacyWallGeometry';
 import { RoomCamera } from './RoomCamera';
 import { RoomFurnitureData } from './RoomFurnitureData';
@@ -9,7 +9,7 @@ export class RoomInstanceData
 
     private _modelName: string;
     private _legacyGeometry: ILegacyWallGeometry;
-    private _roomCamera: RoomCamera;
+    private _roomCamera: IRoomCamera;
     private _selectedObject: ISelectedRoomObjectData;
     private _placedObject: ISelectedRoomObjectData;
     private _furnitureStackingHeightMap: IFurnitureStackingHeightMap;
@@ -197,7 +197,7 @@ export class RoomInstanceData
         return this._legacyGeometry;
     }
 
-    public get roomCamera(): RoomCamera
+    public get roomCamera(): IRoomCamera
     {
         return this._roomCamera;
     }

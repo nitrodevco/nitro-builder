@@ -1,13 +1,28 @@
 import { Spritesheet, Texture } from 'pixi.js';
 import { useCallback, useState } from 'react';
 import { useBetween } from 'use-between';
-import { IAssetData, NitroBundle } from '../api';
-import { ExportNitroBundle } from '../utils';
+import { ExportNitroBundle, IAssetData, IAssetVisualizationData, NitroBundle } from '../api';
 
 const useNitroBundleHook = () =>
 {
     const [ assetData, setAssetData ] = useState<IAssetData>(null);
     const [ spritesheet, setSpritesheet ] = useState<Spritesheet>(null);
+
+    const updateVisualization = (visualizationSize: number, data: IAssetVisualizationData) =>
+    {
+        setAssetData(prevValue =>
+        {
+            const newValue = { ...prevValue };
+
+            const visualizationIndex = newValue.visualizations.findIndex(visualization => (visualization.size === visualizationSize));
+
+            if(visualizationIndex >= 0) newValue.visualizations[visualizationIndex] = data;
+
+            return newValue;
+        });
+    }
+
+    
 
     const exportBundle = useCallback(async () =>
     {

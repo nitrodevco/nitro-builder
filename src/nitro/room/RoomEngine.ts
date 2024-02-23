@@ -1,5 +1,5 @@
 import { Container, Matrix, Point, Rectangle, Sprite, Texture } from 'pixi.js';
-import { GetTicker, GetTickerTime, IFurnitureStackingHeightMap, IImageResult, ILegacyWallGeometry, IObjectData, IPetColorResult, IPetCustomPart, IRoomContentLoader, IRoomEngine, IRoomGeometry, IRoomInstance, IRoomManager, IRoomObject, IRoomObjectController, IRoomObjectLogicFactory, IRoomObjectVisualizationFactory, IRoomRenderer, IRoomRendererFactory, IRoomRenderingCanvas, IRoomSessionManager, ISelectedRoomObjectData, ISessionDataManager, IVector3D, MouseEventType, NumberBank, RoomObjectCategory, RoomObjectUserType, RoomObjectVariable, RoomVariableEnum, Vector3d } from '../../api';
+import { GetTicker, GetTickerTime, IFurnitureStackingHeightMap, IImageResult, ILegacyWallGeometry, IObjectData, IPetColorResult, IPetCustomPart, IRoomCamera, IRoomContentLoader, IRoomEngine, IRoomGeometry, IRoomInstance, IRoomManager, IRoomObject, IRoomObjectController, IRoomObjectLogicFactory, IRoomObjectVisualizationFactory, IRoomRenderer, IRoomRendererFactory, IRoomRenderingCanvas, IRoomSessionManager, ISelectedRoomObjectData, ISessionDataManager, IVector3D, MouseEventType, NumberBank, RoomObjectCategory, RoomObjectUserType, RoomObjectVariable, RoomVariableEnum, Vector3d } from '../../api';
 import { NitroEventDispatcher, RoomBackgroundColorEvent, RoomDragEvent, RoomEngineEvent, RoomEngineObjectEvent, RoomObjectEvent, RoomObjectFurnitureActionEvent, RoomObjectMouseEvent, RoomToObjectOwnAvatarMoveEvent } from '../events';
 import { PetFigureData } from '../pets';
 import { RoomSessionManager, SessionDataManager } from '../session';
@@ -12,7 +12,7 @@ import { RoomObjectLogicFactory } from './RoomObjectLogicFactory';
 import { ObjectAvatarCarryObjectUpdateMessage, ObjectAvatarChatUpdateMessage, ObjectAvatarDanceUpdateMessage, ObjectAvatarEffectUpdateMessage, ObjectAvatarExperienceUpdateMessage, ObjectAvatarExpressionUpdateMessage, ObjectAvatarFigureUpdateMessage, ObjectAvatarFlatControlUpdateMessage, ObjectAvatarGestureUpdateMessage, ObjectAvatarGuideStatusUpdateMessage, ObjectAvatarMutedUpdateMessage, ObjectAvatarOwnMessage, ObjectAvatarPetGestureUpdateMessage, ObjectAvatarPlayerValueUpdateMessage, ObjectAvatarPlayingGameUpdateMessage, ObjectAvatarPostureUpdateMessage, ObjectAvatarSignUpdateMessage, ObjectAvatarSleepUpdateMessage, ObjectAvatarTypingUpdateMessage, ObjectAvatarUpdateMessage, ObjectAvatarUseObjectUpdateMessage, ObjectDataUpdateMessage, ObjectHeightUpdateMessage, ObjectItemDataUpdateMessage, ObjectModelDataUpdateMessage, ObjectMoveUpdateMessage, ObjectRoomColorUpdateMessage, ObjectRoomFloorHoleUpdateMessage, ObjectRoomMaskUpdateMessage, ObjectRoomPlanePropertyUpdateMessage, ObjectRoomPlaneVisibilityUpdateMessage, ObjectRoomUpdateMessage, ObjectStateUpdateMessage, RoomObjectUpdateMessage } from './messages';
 import { LegacyDataType, ObjectDataFactory, RoomLogic, RoomMapData, RoomObjectVisualizationFactory } from './object';
 import { RoomRendererFactory } from './renderer';
-import { RoomCamera, RoomData, RoomEnterEffect, RoomFurnitureData, RoomGeometry, RoomInstanceData } from './utils';
+import { RoomData, RoomEnterEffect, RoomFurnitureData, RoomGeometry, RoomInstanceData } from './utils';
 
 export class RoomEngine implements IRoomEngine
 {
@@ -873,8 +873,6 @@ export class RoomEngine implements IRoomEngine
 
             if(!location) continue;
 
-            console.log(instanceData.roomId, this._activeRoomId);
-
             if((instanceData.roomId !== this._activeRoomId) || !this._activeRoomIsDragged)
             {
                 this.updateRoomCamera(instanceData.roomId, 1, location, time);
@@ -1303,12 +1301,12 @@ export class RoomEngine implements IRoomEngine
         instanceData.setModelName(name);
     }
 
-    private getCurrentRoomCamera(): RoomCamera
+    private getCurrentRoomCamera(): IRoomCamera
     {
         return this.getRoomCamera(this._activeRoomId);
     }
 
-    private getRoomCamera(roomId: number): RoomCamera
+    public getRoomCamera(roomId: number): IRoomCamera
     {
         const instanceData = this.getRoomInstanceData(roomId);
 

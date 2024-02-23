@@ -1,6 +1,6 @@
-﻿import { IVector3D, Vector3d } from '../../../api';
+﻿import { IRoomCamera, IVector3D, Vector3d } from '../../../api';
 
-export class RoomCamera
+export class RoomCamera implements IRoomCamera
 {
     private static MOVE_SPEED_DENOMINATOR: number = 12;
 

@@ -8,7 +8,7 @@ import { IRoomInstance } from './IRoomInstance';
 import { ISelectedRoomObjectData } from './ISelectedRoomObjectData';
 import { IObjectData, IRoomMapData, IRoomObject, IRoomObjectController } from './object';
 import { IRoomRenderingCanvas } from './renderer';
-import { IFurnitureStackingHeightMap, ILegacyWallGeometry, IRoomGeometry } from './utils';
+import { IFurnitureStackingHeightMap, ILegacyWallGeometry, IRoomCamera, IRoomGeometry } from './utils';
 
 export interface IRoomEngine
 {
@@ -62,6 +62,7 @@ export interface IRoomEngine
     getRoomObjectScreenLocation(roomId: number, objectId: number, objectType: number, canvasId?: number): Point;
     getRoomObjectSelectionArrow(roomId: number): IRoomObjectController;
     getRoomObjectUser(roomId: number, objectId: number): IRoomObjectController;
+    getRoomCamera(roomId: number): IRoomCamera;
     getSelectedRoomObjectData(roomId: number): ISelectedRoomObjectData;
     getTotalObjectsForManager(roomId: number, category: number): number;
     init(): Promise<void>;
