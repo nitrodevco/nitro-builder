@@ -17,9 +17,9 @@ export const WelcomeComponent: FC<{}> = props =>
                     <Flex justifyContent="center" className="p-1 gap-2 text-white">
                         <Flex column className="gap-1">
                             <span className="text-2xl">{ localizeText('application.name') }</span>
-                            <Flex column className="gap-3">
+                            <Flex column className="gap-8 w-72">
                                 <Label>{ localizeText('welcome.start') }</Label>
-                                <Label>{ localizeText('open.file') }</Label>
+                                <span>{ localizeText('open.file') }</span>
                             </Flex>
                         </Flex>
                         <div className="nitro-builder-welcome" />
