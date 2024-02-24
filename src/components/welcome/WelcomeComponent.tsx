@@ -10,21 +10,22 @@ export const WelcomeComponent: FC<{}> = props =>
     return (
         <Flex
             justifyContent="center"
-            className="z-10 w-full h-full p-48 overflow-auto">
-            <Container title={ `${ localizeText('application.name') }` }>
-                <Flex column className="p-1 gap-2">
-                    <span className="text-2xl">{ localizeText('application.name') }</span>
-                    <Label>{ localizeText('welcome.start') }</Label>
-                    <div className="nitro-builder-welcome" />
-                    <Flex
-                        column>
-                        <Flex
-                            className="gap-2">
-                            <Label>{ localizeText('open.file') }</Label>
+            alignItems="center"
+            className="z-10 w-full h-full overflow-auto">
+            <Flex className="w-fit h-fit">
+                <Container title={ `${ localizeText('application.name') }` }>
+                    <Flex justifyContent="center" className="p-1 gap-2 text-white">
+                        <Flex column className="gap-1">
+                            <span className="text-2xl">{ localizeText('application.name') }</span>
+                            <Flex column className="gap-3">
+                                <Label>{ localizeText('welcome.start') }</Label>
+                                <Label>{ localizeText('open.file') }</Label>
+                            </Flex>
                         </Flex>
+                        <div className="nitro-builder-welcome" />
                     </Flex>
-                </Flex>
-            </Container>
+                </Container>
+            </Flex>
         </Flex>
     );
 }
