@@ -62,7 +62,7 @@ export const BaseComponent: FC<{}> = props =>
         <>
             <Flex
                 column
-                className="w-full fixed h-[100vh] bg-gray-300">
+                className="w-full fixed h-[100vh] nitro-builder-bg base">
                 <TopBarComponent />
                 <Flex
                     className="z-10 w-full h-full overflow-hidden">

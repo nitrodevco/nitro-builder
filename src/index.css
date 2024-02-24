@@ -4,6 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
+.base {
+  image-rendering: pixelated;
+}
+.nitro-builder-welcome {
+  background-image: url('./assets/images/fridge-nitro-builder.png');
+  height: 140px;
+  width: 200px;
+}
+
+.nitro-builder-bg {
+  background-image: url('./assets/images/nitro-builder-bg.png');
+  background-repeat: repeat;
+  background-size: 200px 150px;
+}
+
 *,
 *:focus,
 *:hover {
