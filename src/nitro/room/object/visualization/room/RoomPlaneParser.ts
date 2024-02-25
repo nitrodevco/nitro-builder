@@ -30,9 +30,6 @@ export class RoomPlaneParser
     private _floorHeight: number = 0;
     private _floorHoles: Map<number, RoomFloorHole>;
     private _floorHoleMatrix: boolean[][];
-    private _restrictsDragging: boolean;
-    private _restrictsScaling: boolean = false;
-    private _restrictedScale: number = 1;
 
     constructor()
     {
@@ -1279,9 +1276,6 @@ export class RoomPlaneParser
         }
 
         this.wallHeight = wallHeight;
-        this.restrictsDragging = data.restrictsDragging;
-        this.restrictsScaling = data.restrictsScaling;
-        this.restrictedScale = data.restrictedScale;
 
         this.initializeFromTileData(fixedWallsHeight);
 
@@ -1311,9 +1305,6 @@ export class RoomPlaneParser
         data.dimensions.maxX = this.maxX;
         data.dimensions.minY = this.minY;
         data.dimensions.maxY = this.maxY;
-        data.restrictsDragging = this.restrictsDragging;
-        data.restrictsScaling = this.restrictsScaling;
-        data.restrictedScale = this.restrictedScale;
 
         let y = 0;
 
@@ -1610,35 +1601,5 @@ export class RoomPlaneParser
             }
             _local_6++;
         }
-    }
-
-    public get restrictsDragging(): boolean
-    {
-        return this._restrictsDragging;
-    }
-
-    public set restrictsDragging(flag: boolean)
-    {
-        this._restrictsDragging = flag;
-    }
-
-    public get restrictsScaling(): boolean
-    {
-        return this._restrictsScaling;
-    }
-
-    public set restrictsScaling(flag: boolean)
-    {
-        this._restrictsScaling = flag;
-    }
-
-    public get restrictedScale(): number
-    {
-        return this._restrictedScale;
-    }
-
-    public set restrictedScale(scale: number)
-    {
-        this._restrictedScale = scale;
     }
 }

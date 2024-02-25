@@ -182,7 +182,7 @@ export class RoomPlane implements IRoomPlane
             }
             case RoomPlane.TYPE_WALL: {
                 planeSprite = new TilingSprite({
-                    texture: GetAssetManager().getTexture('wall_texture'),
+                    texture: Texture.WHITE,
                     width: width,
                     height: height,
                     applyAnchorToTexture: true

@@ -8,6 +8,7 @@ export * from './CompareArrays';
 export * from './GetAssetManager';
 export * from './GetLocalStorage';
 export * from './IAdvancedMap';
+export * from './IAssetManager';
 export * from './IRoute';
 export * from './IVector3D';
 export * from './Int32';

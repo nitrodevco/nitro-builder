@@ -2,8 +2,9 @@ import { Assets, Spritesheet, SpritesheetData, Texture } from 'pixi.js';
 import { GraphicAssetCollection, IAssetData, IGraphicAsset, IGraphicAssetCollection } from '../asset';
 import { NitroBundle } from '../bundle';
 import { ArrayBufferToBase64 } from './ArrayBufferToBase64';
+import { IAssetManager } from './IAssetManager';
 
-export class AssetManager
+export class AssetManager implements IAssetManager
 {
     private _textures: Map<string, Texture> = new Map();
     private _collections: Map<string, IGraphicAssetCollection> = new Map();
@@ -23,6 +24,8 @@ export class AssetManager
     public setTexture(name: string, texture: Texture): void
     {
         if(!name || !texture) return;
+
+        texture.source.scaleMode = 'nearest';
 
         this._textures.set(name, texture);
     }

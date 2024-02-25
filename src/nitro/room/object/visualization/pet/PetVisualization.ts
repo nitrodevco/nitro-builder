@@ -133,7 +133,7 @@ export class PetVisualization extends FurnitureAnimatedVisualization
             this._headDirection = this.object.getDirection().x;
         }
 
-        const customPaletteIndex = model.getValue<number>(RoomObjectVariable.PET_PALETTE_INDEX);
+        const customPaletteIndex = model.getValue<number>(RoomObjectVariable.PET_PALETTE_INDEX) ?? 0;
         const customLayerIds = model.getValue<number[]>(RoomObjectVariable.PET_CUSTOM_LAYER_IDS);
         const customPartIds = model.getValue<number[]>(RoomObjectVariable.PET_CUSTOM_PARTS_IDS);
         const customPaletteIds = model.getValue<number[]>(RoomObjectVariable.PET_CUSTOM_PALETTE_IDS);

@@ -17,11 +17,11 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 assetFileNames: 'src/assets/[name].[ext]',
-                manualChunks: id => 
+                manualChunks: id =>
                 {
                     if (id.includes('node_modules')) 
                     {
-                        if (id.includes('@nitrots/nitro-renderer')) return 'nitro-renderer';
+                        if (id.includes('nitro')) return 'nitro-renderer';
 
                         return 'vendor';
                     }

@@ -1,4 +1,4 @@
-import { Container, Point, Rectangle, Sprite } from 'pixi.js';
+import { Container, Point, Rectangle } from 'pixi.js';
 import { GetTickerTime, IObjectData, IRoomObjectController, IRoomRenderingCanvas, IVector3D, RoomObjectCategory, RoomObjectUserType, RoomObjectVariable, Vector3d } from '../../api';
 import { NitroEventDispatcher, RoomEngineEvent, RoomEngineObjectEvent } from '../events';
 import { RoomEngine } from './RoomEngine';
@@ -34,7 +34,6 @@ export class RoomPreviewer
     private _automaticStateChange: boolean;
     private _previousAutomaticStateChangeTime: number;
     private _addViewOffset: Point;
-    private _backgroundSprite: Sprite = null;
     private _disableUpdate: boolean = false;
 
     constructor(roomEngine: RoomEngine, roomId: number = 1)
@@ -66,13 +65,6 @@ export class RoomPreviewer
             NitroEventDispatcher.removeEventListener(RoomEngineObjectEvent.ADDED, this.onRoomObjectAdded);
             NitroEventDispatcher.removeEventListener(RoomEngineObjectEvent.CONTENT_UPDATED, this.onRoomObjectAdded);
             NitroEventDispatcher.removeEventListener(RoomEngineEvent.INITIALIZED, this.onRoomInitializedonRoomInitialized);
-        }
-
-        if(this._backgroundSprite)
-        {
-            this._backgroundSprite.destroy();
-
-            this._backgroundSprite = null;
         }
 
         if(this._planeParser)
@@ -443,12 +435,6 @@ export class RoomPreviewer
         {
             this._currentPreviewCanvasWidth = width;
             this._currentPreviewCanvasHeight = height;
-
-            if(this._backgroundSprite)
-            {
-                this._backgroundSprite.width = width;
-                this._backgroundSprite.height = height;
-            }
 
             this._roomEngine.initializeRoomInstanceRenderingCanvas(this._previewRoomId, RoomPreviewer.PREVIEW_CANVAS_ID, width, height);
         }

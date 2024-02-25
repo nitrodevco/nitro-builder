@@ -10,9 +10,6 @@ export class RoomMapData implements IRoomMapData
     private _holeMap: { id: number, x: number, y: number, width: number, height: number }[];
     private _doors: { x: number, y: number, z: number, dir: number }[];
     private _dimensions: { minX: number, maxX: number, minY: number, maxY: number };
-    private _restrictsDragging: boolean;
-    private _restrictsScaling: boolean;
-    private _restrictedScale: number;
 
     constructor()
     {
@@ -29,9 +26,6 @@ export class RoomMapData implements IRoomMapData
             minY: 0,
             maxY: 0
         };
-        this._restrictsDragging = false;
-        this._restrictedScale = 1;
-        this._restrictsScaling = false;
     }
 
     public get width(): number
@@ -92,35 +86,5 @@ export class RoomMapData implements IRoomMapData
     public get dimensions(): { minX: number, maxX: number, minY: number, maxY: number }
     {
         return this._dimensions;
-    }
-
-    public get restrictsDragging(): boolean
-    {
-        return this._restrictsDragging;
-    }
-
-    public set restrictsDragging(flag: boolean)
-    {
-        this._restrictsDragging = flag;
-    }
-
-    public get restrictsScaling(): boolean
-    {
-        return this._restrictsScaling;
-    }
-
-    public set restrictsScaling(flag: boolean)
-    {
-        this._restrictsScaling = flag;
-    }
-
-    public get restrictedScale(): number
-    {
-        return this._restrictedScale;
-    }
-
-    public set restrictedScale(scale: number)
-    {
-        this._restrictedScale = scale;
     }
 }
