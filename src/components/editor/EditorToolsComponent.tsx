@@ -1,8 +1,8 @@
 import { FC, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useNitroBundle, useRoomPreviewer } from '../../../hooks';
-import { Button } from '../../../layout';
-import { GetRoomEngine } from '../../../nitro';
+import { useNitroBundle, useRoomPreviewer } from '../../hooks';
+import { Button } from '../../layout';
+import { GetRoomEngine } from '../../nitro';
 
 export const EditorToolsComponent: FC<{}> = props =>
 {

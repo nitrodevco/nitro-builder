@@ -1,12 +1,42 @@
 import { Spritesheet, Texture } from 'pixi.js';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useBetween } from 'use-between';
 import { ExportNitroBundle, IAssetData, IAssetVisualizationData, NitroBundle } from '../api';
+
+const DEFAULT_VISUALIZATION_SIZE = 64;
 
 const useNitroBundleHook = () =>
 {
     const [ assetData, setAssetData ] = useState<IAssetData>(null);
     const [ spritesheet, setSpritesheet ] = useState<Spritesheet>(null);
+    const [ currentVisualizationSize, setCurrentVisualizationSize ] = useState<number>(DEFAULT_VISUALIZATION_SIZE);
+
+    const getVisualizationSizes = useMemo(() =>
+    {
+        if(!assetData) return [];
+
+        if(!assetData.visualizations) assetData.visualizations = [];
+
+        return assetData.visualizations.map(visualizations => visualizations.size);
+    }, [ assetData ]);
+
+    const getVisualization = useCallback((size: number): IAssetVisualizationData =>
+    {
+        if(!assetData) return null;
+
+        if(!assetData.visualizations) assetData.visualizations = [];
+
+        let visualization = assetData.visualizations.find(visualization => (visualization.size === size));
+
+        if(!visualization)
+        {
+            visualization = {};
+
+            assetData.visualizations.push(visualization);
+        }
+
+        return visualization;
+    }, [ assetData ]);
 
     const updateVisualization = (visualizationSize: number, data: IAssetVisualizationData) =>
     {
@@ -21,19 +51,6 @@ const useNitroBundleHook = () =>
             return newValue;
         });
     }
-
-    
-
-    const exportBundle = useCallback(async () =>
-    {
-        if(!assetData) return;
-
-        const textures: Texture[] = [];
-
-        for(const name in spritesheet.textures) textures.push(spritesheet.textures[name]);
-
-        await ExportNitroBundle(assetData.name, assetData, textures);
-    }, [ spritesheet, assetData ]);
 
     const importBundle = useCallback(async (file: File) =>
     {
@@ -90,7 +107,17 @@ const useNitroBundleHook = () =>
             }
         });
     }, []);
-    
+
+    const exportBundle = useCallback(async () =>
+    {
+        if(!assetData) return;
+
+        const textures: Texture[] = [];
+
+        for(const name in spritesheet.textures) textures.push(spritesheet.textures[name]);
+
+        await ExportNitroBundle(assetData.name, assetData, textures);
+    }, [ spritesheet, assetData ]);
 
     return { assetData, setAssetData, spritesheet, importBundle, exportBundle };
 }

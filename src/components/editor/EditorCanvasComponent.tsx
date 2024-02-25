@@ -1,8 +1,8 @@
 import { FC, useCallback, useEffect, useRef } from 'react';
-import { GetAssetManager, GetPixi, RoomObjectCategory, RoomVariableEnum, Vector3d } from '../../../api';
-import { useNitroBundle, useRoomPreviewer } from '../../../hooks';
-import { GetRoomEngine, RoomGeometry, RoomPreviewer } from '../../../nitro';
-import { DispatchMouseEvent } from '../../../utils';
+import { GetAssetManager, GetPixi, RoomObjectCategory, RoomVariableEnum, Vector3d } from '../../api';
+import { useNitroBundle, useRoomPreviewer } from '../../hooks';
+import { GetRoomEngine, RoomGeometry, RoomPreviewer } from '../../nitro';
+import { DispatchMouseEvent } from '../../utils';
 import { EditorToolsComponent } from './EditorToolsComponent';
 
 export const EditorCanvasComponent: FC<{}> = props =>
@@ -51,7 +51,7 @@ export const EditorCanvasComponent: FC<{}> = props =>
         canvas.onmousemove = event => DispatchMouseEvent(event);
         canvas.onmousedown = event => DispatchMouseEvent(event);
         canvas.onmouseup = event => DispatchMouseEvent(event);
-        canvas.style['imageRendering'] = 'pixelated';
+        //canvas.style['imageRendering'] = 'pixelated';
 
         pixi.renderer.resize(width, height);
         pixi.render();
@@ -82,8 +82,8 @@ export const EditorCanvasComponent: FC<{}> = props =>
         {
             if(!roomPreviewer || !element) return;
 
-            const width = Math.floor(elementRef.current.parentElement.clientWidth);
-            const height = Math.floor(elementRef.current.parentElement.clientHeight);
+            const width = Math.floor(element.clientWidth);
+            const height = Math.floor(element.clientHeight);
 
             roomPreviewer.modifyRoomCanvas(width, height);
 
@@ -121,7 +121,7 @@ export const EditorCanvasComponent: FC<{}> = props =>
     }, [ assetData, spritesheet, roomPreviewer ]);
 
     return (
-        <div className="w-full h-full" ref={ elementRef }>.
+        <div className="w-full h-full" ref={ elementRef }>
             <EditorToolsComponent />
         </div>
     );

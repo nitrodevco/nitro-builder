@@ -1,24 +1,22 @@
 import { FC } from 'react';
-import { useNitroBundle } from '../../../hooks';
-import { Button, Flex } from '../../../layout';
+import { useNitroBundle } from '../../hooks';
+import { Button, Flex } from '../../layout';
 
 export const SideBarComponent: FC<{}> = () =>
 {
     const { assetData, setAssetData, exportBundle } = useNitroBundle();
+
+    if(!assetData) return null;
 
     const type = assetData?.type;
     const visualizations = assetData?.visualizations?.map(visualization => visualization.size) ?? [];
 
     return (
         <Flex
-            className="w-full h-full gap-1">
+            column
+            className="w-full h-full gap-1 overflow-hidden">
             <Flex
-                className="w-[50] h-full bg-[#8b8b8b]">
-                list<br/>of<br />icons
-            </Flex>
-            <Flex
-                column
-                className="w-full h-full">
+                column>
                 <span>name: { assetData.name }</span>
                 <span>visualization type: { assetData.visualizationType }</span>
                 <span>logic type: { assetData.logicType }</span>
