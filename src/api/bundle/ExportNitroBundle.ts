@@ -1,19 +1,20 @@
 import { Texture } from 'pixi.js';
-import { IAssetData, NitroBundle } from '..';
-import { CreateSpritesheet } from '../../utils/CreateSpritesheet';
+import { IAssetData } from '../asset';
+import { CreateSpritesheet } from '../utils';
+import { NitroBundle } from './NitroBundle';
 
-export const ExportNitroBundle = async (name: string, assetData: IAssetData, textures: Texture[]) =>
+export const ExportNitroBundle = async (name: string, assetData: IAssetData, textures: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture }[]) =>
 {
-    const newSpritesheet = await CreateSpritesheet(assetData.name, textures);
+    const spritesheet = await CreateSpritesheet(assetData.name, textures);
 
     assetData = { ...assetData };
 
-    assetData.spritesheet = newSpritesheet.spritesheetData;
+    assetData.spritesheet = spritesheet.spritesheetData;
 
     const bundle = new NitroBundle();
 
     bundle.addFile(`${ name }.json`, NitroBundle.TEXT_ENCODER.encode(JSON.stringify(assetData)));
-    bundle.addFile(`${ name }.png`, newSpritesheet.spritesheet as ArrayBuffer);
+    bundle.addFile(`${ name }.png`, spritesheet.spritesheet as ArrayBuffer);
 
     const link = document.createElement('a');
 

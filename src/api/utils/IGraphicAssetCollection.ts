@@ -1,4 +1,4 @@
-import { Texture, TextureSource } from 'pixi.js';
+import { Texture } from 'pixi.js';
 import { IAssetData } from '../asset/IAssetData';
 import { IGraphicAsset } from './IGraphicAsset';
 import { IGraphicAssetPalette } from './IGraphicAssetPalette';
@@ -16,6 +16,5 @@ export interface IGraphicAssetCollection
     addAsset(name: string, texture: Texture, override: boolean, x?: number, y?: number, flipH?: boolean, flipV?: boolean): boolean;
     disposeAsset(name: string): void;
     name: string;
-    baseTexture: TextureSource;
     data: IAssetData;
 }

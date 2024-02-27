@@ -5,6 +5,7 @@ export * from './Base64ToArrayBuffer';
 export * from './BinaryReader';
 export * from './ColorConverter';
 export * from './CompareArrays';
+export * from './CreateSpritesheet';
 export * from './GetAssetManager';
 export * from './GetLocalStorage';
 export * from './GraphicAsset';

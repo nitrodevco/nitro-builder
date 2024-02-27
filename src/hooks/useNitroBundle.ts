@@ -1,56 +1,12 @@
 import { Spritesheet, Texture } from 'pixi.js';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
-import { AssetData, ExportNitroBundle, IAssetData, IAssetVisualizationData, NitroBundle } from '../api';
-
-const DEFAULT_VISUALIZATION_SIZE = 64;
+import { AssetData, ExportNitroBundle, GetAssetManager, NitroBundle } from '../api';
 
 const useNitroBundleHook = () =>
 {
-    const [ assetData, setAssetData ] = useState<IAssetData>(null);
-    const [ spritesheet, setSpritesheet ] = useState<Spritesheet>(null);
-    const [ currentVisualizationSize, setCurrentVisualizationSize ] = useState<number>(DEFAULT_VISUALIZATION_SIZE);
-
-    const getVisualizationSizes = useMemo(() =>
-    {
-        if(!assetData) return [];
-
-        if(!assetData.visualizations) assetData.visualizations = [];
-
-        return assetData.visualizations.map(visualizations => visualizations.size);
-    }, [ assetData ]);
-
-    const getVisualization = useCallback((size: number): IAssetVisualizationData =>
-    {
-        if(!assetData) return null;
-
-        if(!assetData.visualizations) assetData.visualizations = [];
-
-        let visualization = assetData.visualizations.find(visualization => (visualization.size === size));
-
-        if(!visualization)
-        {
-            visualization = {};
-
-            assetData.visualizations.push(visualization);
-        }
-
-        return visualization;
-    }, [ assetData ]);
-
-    const updateVisualization = (visualizationSize: number, data: IAssetVisualizationData) =>
-    {
-        setAssetData(prevValue =>
-        {
-            const newValue = { ...prevValue };
-
-            const visualizationIndex = newValue.visualizations.findIndex(visualization => (visualization.size === visualizationSize));
-
-            if(visualizationIndex >= 0) newValue.visualizations[visualizationIndex] = data;
-
-            return newValue;
-        });
-    }
+    const [ assetData, setAssetData ] = useState<AssetData>(null);
+    const [ assets, setAssets ] = useState<{ size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture }[]>(null);
 
     const importBundle = useCallback(async (file: File) =>
     {
@@ -83,8 +39,6 @@ const useNitroBundleHook = () =>
                     const bundle = await NitroBundle.from(result);
                     const newAssetData = bundle.file;
 
-                    let newSpritesheet: Spritesheet = null;
-
                     if(!newAssetData)
                     {
                         reject('invalid_bundle');
@@ -92,17 +46,47 @@ const useNitroBundleHook = () =>
                         return;
                     }
 
-                    if(newAssetData.spritesheet && Object.keys(newAssetData.spritesheet).length)
+                    if(bundle.file.spritesheet && Object.keys(bundle.file.spritesheet).length)
                     {
-                        newSpritesheet = new Spritesheet(bundle.texture, newAssetData.spritesheet);
+                        const newSpritesheet = new Spritesheet(bundle.texture, bundle.file.spritesheet);
 
                         await newSpritesheet.parse();
+
+                        setAssets(() =>
+                        {
+                            const newValue: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture }[] = [];
+
+                            for(const name in newSpritesheet.textures)
+                            {
+                                const newAsset: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture } = {
+                                    texture: newSpritesheet.textures[name]
+                                };
+
+                                const parts = name.split('_');
+
+                                if(name.indexOf('_icon_') >= 0)
+                                {
+                                    newAsset.isIcon = true;
+                                    newAsset.layerCode = parts[(parts.length - 1)];
+                                }
+                                else
+                                {
+                                    newAsset.size = parseInt(parts[(parts.length - 4)]);
+                                    newAsset.layerCode = parts[(parts.length - 3)];
+                                    newAsset.direction = parseInt(parts[(parts.length - 2)]);
+                                    newAsset.frameNumber = parseInt(parts[(parts.length - 1)]);
+                                }
+
+                                newValue.push(newAsset);
+                            }
+
+                            return newValue;
+                        });
                     }
 
-                    const newerAssetData = AssetData.from(newAssetData).toJSON();
+                    delete newAssetData.spritesheet;
 
-                    setAssetData(newerAssetData);
-                    setSpritesheet(newSpritesheet)
+                    setAssetData(AssetData.from(newAssetData));
 
                     resolve(true);
                 })();
@@ -114,14 +98,33 @@ const useNitroBundleHook = () =>
     {
         if(!assetData) return;
 
-        const textures: Texture[] = [];
+        await ExportNitroBundle(assetData.name, assetData.toJSON(), assets);
+    }, [ assetData, assets ]);
 
-        for(const name in spritesheet.textures) textures.push(spritesheet.textures[name]);
+    useEffect(() =>
+    {
+        if(!assetData || !assets) return;
 
-        await ExportNitroBundle(assetData.name, assetData, textures);
-    }, [ spritesheet, assetData ]);
+        console.log(assets, assetData);
 
-    return { assetData, setAssetData, spritesheet, importBundle, exportBundle };
+        GetAssetManager().createCollection(assetData.toJSON(), assets.map(asset =>
+        {
+            let name: string = assetData.name;
+
+            if(asset.isIcon)
+            {
+                name = `${ name }_${ name }_icon_${ asset.layerCode }`;
+            }
+            else
+            {
+                name = `${ name }_${ name }_${ asset.size }_${ asset.layerCode }_${ asset.direction }_${ asset.frameNumber }`
+            }
+
+            return { name, texture: asset.texture };
+        }));
+    }, [ assetData, assets ]);
+
+    return { assetData, setAssetData, assets, setAssets, importBundle, exportBundle };
 }
 
 export const useNitroBundle = () => useBetween(useNitroBundleHook);

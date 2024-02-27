@@ -30,6 +30,8 @@ export class AssetManager implements IAssetManager
 
         texture.source.scaleMode = 'nearest';
 
+        texture.label = name;
+
         this._textures.set(name, texture);
     }
 
@@ -73,11 +75,11 @@ export class AssetManager implements IAssetManager
         return existing;
     }
 
-    public createCollection(data: IAssetData, spritesheet: Spritesheet): IGraphicAssetCollection
+    public createCollection(data: IAssetData, assets: { name: string, texture: Texture }[]): IGraphicAssetCollection
     {
         if(!data) return null;
 
-        const collection = new GraphicAssetCollection(data, spritesheet);
+        const collection = new GraphicAssetCollection(data, assets);
 
         if(collection)
         {
@@ -100,7 +102,11 @@ export class AssetManager implements IAssetManager
             await spritesheet.parse();
         }
 
-        this.createCollection(data, spritesheet);
+        const assets: { name: string, texture: Texture }[] = [];
+
+        for(const name in spritesheet.textures) assets.push({ name, texture: spritesheet.textures[name] });
+
+        this.createCollection(data, assets);
     }
 
     public async downloadAsset(url: string): Promise<boolean>

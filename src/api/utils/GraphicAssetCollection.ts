@@ -1,4 +1,4 @@
-import { Dict, Spritesheet, Texture, TextureSource } from 'pixi.js';
+import { Texture } from 'pixi.js';
 import { IAsset } from '../asset/IAsset';
 import { IAssetData } from '../asset/IAssetData';
 import { IAssetPalette } from '../asset/IAssetPalette';
@@ -15,26 +15,24 @@ export class GraphicAssetCollection implements IGraphicAssetCollection
     private _referenceTimestamp: number;
 
     private _name: string;
-    private _baseTexture: TextureSource;
     private _data: IAssetData;
     private _textures: Map<string, Texture>;
     private _assets: Map<string, GraphicAsset>;
     private _palettes: Map<string, GraphicAssetPalette>;
     private _paletteAssetNames: string[];
 
-    constructor(data: IAssetData, spritesheet: Spritesheet)
+    constructor(data: IAssetData, assets: { name: string, texture: Texture }[])
     {
         if(!data) throw new Error('invalid_collection');
 
         this._name = data.name;
-        this._baseTexture = ((spritesheet && spritesheet.textureSource) || null);
         this._data = data;
         this._textures = new Map();
         this._assets = new Map();
         this._palettes = new Map();
         this._paletteAssetNames = [];
 
-        if(spritesheet) this.addLibraryAsset(spritesheet.textures);
+        this.addLibraryAssets(assets)
 
         this.define(data);
     }
@@ -308,18 +306,16 @@ export class GraphicAssetCollection implements IGraphicAssetCollection
         return texture;
     }
 
-    private addLibraryAsset(textures: Dict<Texture>): void
+    private addLibraryAssets(assets: { name: string, texture: Texture }[]): void
     {
-        if(!textures) return;
+        if(!assets || !assets.length) return;
 
-        for(const name in textures)
+        assets.forEach(asset =>
         {
-            const texture = textures[name];
+            asset.name = GraphicAssetCollection.removeFileExtension(asset.name);
 
-            if(!texture) continue;
-
-            this._textures.set(GraphicAssetCollection.removeFileExtension(name), texture);
-        }
+            this._textures.set(asset.name, asset.texture);
+        });
     }
 
     private disposePaletteAssets(disposeAll: boolean = true): void
@@ -348,11 +344,6 @@ export class GraphicAssetCollection implements IGraphicAssetCollection
     public get name(): string
     {
         return this._name;
-    }
-
-    public get baseTexture(): TextureSource
-    {
-        return this._baseTexture;
     }
 
     public get data(): IAssetData

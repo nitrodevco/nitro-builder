@@ -1,17 +1,27 @@
 import { Sprite, Texture } from 'pixi.js';
-import { Base64ToArrayBuffer, ISpritesheetData, TextureUtils } from '../api';
+import { Base64ToArrayBuffer, ISpritesheetData, TextureUtils } from '..';
 
-export const CreateSpritesheet = async (name: string, textures: Texture[]) =>
+export const CreateSpritesheet = async (name: string, assets: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture }[]) =>
 {
-    if(!textures || !textures.length) return null;
+    if(!assets || !assets.length) return null;
 
     let spritesheetWidth = 0;
     let spritesheetHeight = 0;
 
-    const sprites = textures.map(texture =>
+    const sprites = assets.map(asset =>
     {
+        const texture = asset.texture;
         const width = texture.width;
         const height = texture.height;
+
+        if(asset.isIcon)
+        {
+            texture.label = `${ name }_${ name }_icon_${ asset.layerCode }`;
+        }
+        else
+        {
+            texture.label = `${ name }_${ name }_${ asset.size }_${ asset.layerCode }_${ asset.direction }_${ asset.frameNumber }`
+        }
 
         if(spritesheetWidth < width) spritesheetWidth = width;
 

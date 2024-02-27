@@ -1,5 +1,6 @@
-import { Spritesheet, Texture } from 'pixi.js';
-import { GraphicAssetCollection, IAssetData, IGraphicAssetCollection } from '../../asset';
+import { Texture } from 'pixi.js';
+import { IAssetData } from '../../asset';
+import { GraphicAssetCollection, IGraphicAssetCollection } from '../../utils';
 import { IFurnitureData } from '../session';
 import { IPetColorResult } from './IPetColorResult';
 import { IRoomObject } from './object';
@@ -8,7 +9,7 @@ export interface IRoomContentLoader
 {
     init(): Promise<void>;
     isLoaderType(type: string): boolean;
-    createCollection(data: IAssetData, spritesheet: Spritesheet): GraphicAssetCollection;
+    createCollection(data: IAssetData, assets: { name: string, texture: Texture }[]): GraphicAssetCollection;
     processFurnitureData(furnitureData: IFurnitureData[]): void;
     getCollection(name: string): IGraphicAssetCollection;
     getPlaceholderName(type: string): string;

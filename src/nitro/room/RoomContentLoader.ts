@@ -1,5 +1,5 @@
-import { Spritesheet, Texture } from 'pixi.js';
-import { FurnitureType, GetAssetManager, GraphicAssetCollection, IAssetData, IFurnitureData, IGraphicAssetCollection, IPetColorResult, IRoomContentLoader, IRoomObject, ISessionDataManager, ISpritesheetData, RoomObjectCategory, RoomObjectUserType, RoomObjectVariable, RoomObjectVisualizationType } from '../../api';
+import { Texture } from 'pixi.js';
+import { FurnitureType, GetAssetManager, GraphicAssetCollection, IAssetData, IFurnitureData, IGraphicAssetCollection, IPetColorResult, IRoomContentLoader, IRoomObject, ISessionDataManager, RoomObjectCategory, RoomObjectUserType, RoomObjectVariable, RoomObjectVisualizationType } from '../../api';
 import { PetColorResult } from './PetColorResult';
 
 export class RoomContentLoader implements IRoomContentLoader
@@ -222,9 +222,9 @@ export class RoomContentLoader implements IRoomContentLoader
         return collection.addAsset(assetName, texture, override, 0, 0, false, false);
     }
 
-    public createCollection(data: IAssetData, spritesheet: Spritesheet): GraphicAssetCollection
+    public createCollection(data: IAssetData, assets: { name: string, texture: Texture }[]): GraphicAssetCollection
     {
-        const collection = GetAssetManager().createCollection(data, spritesheet);
+        const collection = GetAssetManager().createCollection(data, assets);
 
         if(!collection) return null;
 
@@ -310,20 +310,6 @@ export class RoomContentLoader implements IRoomContentLoader
         if(type === RoomObjectVisualizationType.USER) return false;
 
         return true;
-    }
-
-    public async processAsset(texture: Texture, data: IAssetData): Promise<void>
-    {
-        let spritesheet: Spritesheet<ISpritesheetData> = null;
-
-        if(texture && data?.spritesheet && Object.keys(data.spritesheet).length)
-        {
-            spritesheet = new Spritesheet(texture, data.spritesheet);
-
-            await spritesheet.parse();
-        }
-
-        this.createCollection(data, spritesheet);
     }
 
     public setAssetAliasName(name: string, originalName: string): void

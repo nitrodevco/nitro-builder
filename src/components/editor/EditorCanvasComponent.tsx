@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef } from 'react';
-import { AssetData, GetAssetManager, GetPixi, RoomObjectCategory, Vector3d } from '../../api';
+import { GetPixi, RoomObjectCategory, Vector3d } from '../../api';
 import { useNitroBundle, useRoomPreviewer } from '../../hooks';
 import { GetRoomEngine, RoomPreviewer } from '../../nitro';
 import { DispatchMouseEvent } from '../../utils';
@@ -7,7 +7,7 @@ import { EditorCanvasToolsComponent } from './EditorCanvasToolsComponent';
 
 export const EditorCanvasComponent: FC<{}> = props =>
 {
-    const { assetData = null, spritesheet = null } = useNitroBundle();
+    const { assetData = null, assets = null } = useNitroBundle();
     const { roomPreviewer, centerRoom = null } = useRoomPreviewer();
     const elementRef = useRef<HTMLDivElement>();
 
@@ -75,13 +75,7 @@ export const EditorCanvasComponent: FC<{}> = props =>
 
     useEffect(() =>
     {
-        if(!assetData || !spritesheet || !roomPreviewer) return;
-
-        GetAssetManager().createCollection(assetData, spritesheet);
-
-        console.log(assetData);
-
-        console.log(AssetData.from(assetData));
+        if(!assetData || !assets || !roomPreviewer) return;
 
         roomPreviewer.addFurnitureIntoRoom(assetData.name, new Vector3d(90))
 
@@ -96,7 +90,7 @@ export const EditorCanvasComponent: FC<{}> = props =>
         {
             roomPreviewer.reset(true);
         }
-    }, [ assetData, spritesheet, roomPreviewer ]);
+    }, [ assetData, assets, roomPreviewer ]);
 
     return (
         <div className="relative w-full h-full" ref={ elementRef }>

@@ -1026,7 +1026,6 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
 
             if(!(((event instanceof RoomObjectTileMouseEvent)) && (this.handleFurnitureMove(roomObject, selectedData, Math.trunc(event.tileX + 0.5), Math.trunc(event.tileY + 0.5), stackingHeightMap))))
             {
-                console.log('doooo')
                 this.handleFurnitureMove(roomObject, selectedData, selectedData.loc.x, selectedData.loc.y, stackingHeightMap);
 
                 _local_6 = false;
@@ -1667,7 +1666,6 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
                 this._roomEngine.setObjectMoverIconSpriteVisible(false);
                 break;
             case RoomObjectOperationType.OBJECT_MOVE_TO: {
-                console.log('yeee')
                 const selectedData = this.getSelectedRoomObjectData(roomId);
 
                 this.updateSelectedObjectData(roomId, selectedData.id, selectedData.category, selectedData.loc, selectedData.dir, RoomObjectOperationType.OBJECT_MOVE_TO, selectedData.typeId, selectedData.instanceData, selectedData.stuffData, selectedData.state, selectedData.animFrame, selectedData.posture);
@@ -1830,8 +1828,6 @@ export class RoomObjectEventHandler implements IRoomCanvasMouseListener, IRoomOb
         _local_11 = (Math.trunc((Math.trunc((direction.x + 45)) % 360) / 90));
 
         if(((_local_11 === 1) || (_local_11 === 3))) [ _local_8, _local_9 ] = [ _local_9, _local_8 ];
-
-        console.log(stackingHeightMap);
 
         if(stackingHeightMap && location)
         {
