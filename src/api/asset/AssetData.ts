@@ -110,7 +110,7 @@ export class AssetData
         {
             json.assets = {};
 
-            this.assets.forEach(asset => json.assets[asset.getKeyWithName(this.name)] = asset.toJSON(this.name));
+            this.assets.forEach(asset => json.assets[Asset.getKeyWithName(this.name, asset)] = asset.toJSON(this.name));
         }
 
         if(this.aliases && this.aliases.length)

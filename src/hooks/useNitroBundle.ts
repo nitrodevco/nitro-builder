@@ -1,12 +1,12 @@
 import { Spritesheet, Texture } from 'pixi.js';
 import { useCallback, useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
-import { AssetData, ExportNitroBundle, GetAssetManager, NitroBundle } from '../api';
+import { Asset, AssetData, ExportNitroBundle, GetAssetManager, IAssetItem, NitroBundle } from '../api';
 
 const useNitroBundleHook = () =>
 {
     const [ assetData, setAssetData ] = useState<AssetData>(null);
-    const [ assets, setAssets ] = useState<{ size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture }[]>(null);
+    const [ assets, setAssets ] = useState<({ texture: Texture } & IAssetItem)[]>(null);
 
     const importBundle = useCallback(async (file: File) =>
     {
@@ -54,11 +54,11 @@ const useNitroBundleHook = () =>
 
                         setAssets(() =>
                         {
-                            const newValue: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture }[] = [];
+                            const newValue: ({ texture: Texture } & IAssetItem)[] = [];
 
                             for(const name in newSpritesheet.textures)
                             {
-                                const newAsset: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture } = {
+                                const newAsset: { texture: Texture } & IAssetItem = {
                                     texture: newSpritesheet.textures[name]
                                 };
 
@@ -109,18 +109,7 @@ const useNitroBundleHook = () =>
 
         GetAssetManager().createCollection(assetData.toJSON(), assets.map(asset =>
         {
-            let name: string = assetData.name;
-
-            if(asset.isIcon)
-            {
-                name = `${ name }_${ name }_icon_${ asset.layerCode }`;
-            }
-            else
-            {
-                name = `${ name }_${ name }_${ asset.size }_${ asset.layerCode }_${ asset.direction }_${ asset.frameNumber }`
-            }
-
-            return { name, texture: asset.texture };
+            return { name: `${ assetData.name }_${ Asset.getKeyWithName(assetData.name, asset) }`, texture: asset.texture };
         }));
     }, [ assetData, assets ]);
 

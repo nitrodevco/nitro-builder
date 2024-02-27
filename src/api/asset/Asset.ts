@@ -1,6 +1,7 @@
 import { IAsset } from './IAsset';
+import { IAssetItem } from './IAssetItem';
 
-export class Asset
+export class Asset implements IAssetItem
 {
     public isIcon: boolean = false;
     public size: number;
@@ -8,7 +9,7 @@ export class Asset
     public direction: number;
     public frameNumber: number;
 
-    public source: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean };
+    public source: IAssetItem;
     public x: number;
     public y: number;
     public flipH: boolean;
@@ -57,29 +58,18 @@ export class Asset
         return asset;
     }
 
-    public getKeyWithName(name: string): string
+    public static getKeyWithName(name: string, asset: IAssetItem): string
     {
-        if(this.isIcon) return `${ name }_icon_${ this.layerCode }`;
+        if(asset.isIcon) return `${ name }_icon_${ asset.layerCode }`;
 
-        return `${ name }_${ this.size }_${ this.layerCode }_${ this.direction }_${ this.frameNumber }`;
+        return `${ name }_${ asset.size }_${ asset.layerCode }_${ asset.direction }_${ asset.frameNumber }`;
     }
 
     public toJSON(name: string = null): IAsset
     {
         const json: IAsset = {};
 
-        if(this.source != undefined && name != null)
-        {
-            if(this.source.isIcon)
-            {
-                json.source = `${ name }_icon_${ this.source.layerCode }`;
-            }
-            else
-            {
-                json.source = `${ name }_${ this.source.size }_${ this.source.layerCode }_${ this.source.direction }_${ this.source.frameNumber }`
-            }
-        }
-
+        if(this.source != undefined && name != null) json.source = Asset.getKeyWithName(name, this.source);
         if(this.x != undefined) json.x = this.x;
         if(this.y != undefined) json.y = this.y;
         if(this.flipH != undefined) json.flipH = this.flipH;

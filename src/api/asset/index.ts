@@ -5,6 +5,7 @@ export * from './AssetPalette';
 export * from './IAsset';
 export * from './IAssetAlias';
 export * from './IAssetData';
+export * from './IAssetItem';
 export * from './IAssetPalette';
 export * from './animation';
 export * from './logic';

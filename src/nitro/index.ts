@@ -1,4 +1,6 @@
+export * from './CenterRoom';
 export * from './GetRoomEngine';
+export * from './PrepareRoomEngine';
 export * from './avatar';
 export * from './avatar/enum';
 export * from './events';
@@ -17,6 +19,7 @@ export * from './room/object/logic/room';
 export * from './room/object/visualization';
 export * from './room/object/visualization/data';
 export * from './room/object/visualization/furniture';
+export * from './room/object/visualization/pet';
 export * from './room/object/visualization/room';
 export * from './room/renderer';
 export * from './room/renderer/cache';
