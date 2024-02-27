@@ -1,9 +1,9 @@
-import { IAssetVisualAnimation } from './animation/IAssetVisualAnimation';
-import { IAssetColor } from './color/IAssetColor';
-import { IAssetGesture } from './gestures/IAssetGesture';
+import { IAssetVisualizationAnimation } from './animation/IAssetVisualizationAnimation';
+import { IAssetVisualizationColor } from './color/IAssetVisualizationColor';
+import { IAssetVisualizationGesture } from './gestures/IAssetVisualizationGesture';
 import { IAssetVisualizationDirection } from './IAssetVisualizationDirection';
 import { IAssetVisualizationLayer } from './IAssetVisualizationLayer';
-import { IAssetPosture } from './postures/IAssetPosture';
+import { IAssetVisualizationPosture } from './postures/IAssetVisualizationPosture';
 
 export interface IAssetVisualizationData
 {
@@ -11,10 +11,10 @@ export interface IAssetVisualizationData
     layerCount?: number;
     angle?: number;
     layers?: { [index: string]: IAssetVisualizationLayer };
-    colors?: { [index: string]: IAssetColor };
+    colors?: { [index: string]: IAssetVisualizationColor };
     directions?: { [index: string]: IAssetVisualizationDirection };
-    animations?: { [index: string]: IAssetVisualAnimation };
+    animations?: { [index: string]: IAssetVisualizationAnimation };
     defaultPosture?: string;
-    postures?: { defaultPosture?: string, postures?: IAssetPosture[] };
-    gestures?: IAssetGesture[];
+    postures?: { defaultPosture?: string, postures?: IAssetVisualizationPosture[] };
+    gestures?: IAssetVisualizationGesture[];
 }

@@ -1,5 +1,7 @@
 import { Spritesheet, Texture } from 'pixi.js';
-import { IAssetData, IGraphicAsset, IGraphicAssetCollection } from '../asset';
+import { IAssetData } from '../asset';
+import { IGraphicAsset } from './IGraphicAsset';
+import { IGraphicAssetCollection } from './IGraphicAssetCollection';
 
 export interface IAssetManager
 {

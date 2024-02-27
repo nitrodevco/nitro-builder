@@ -1,4 +1,4 @@
-import { IAssetData, IParticleSystem, IRoomGeometry, MouseEventType, RoomObjectVariable } from '../../../../../api';
+import { IAssetData, IAssetLogicParticleSystem, IRoomGeometry, MouseEventType, RoomObjectVariable } from '../../../../../api';
 import { RoomObjectEvent, RoomObjectStateChangedEvent, RoomSpriteMouseEvent } from '../../../../events';
 import { FurnitureLogic } from './FurnitureLogic';
 
@@ -19,7 +19,7 @@ export class FurnitureFireworksLogic extends FurnitureLogic
         {
             if(asset.logic.particleSystems && asset.logic.particleSystems.length)
             {
-                this.object.model.setValue<IParticleSystem[]>(RoomObjectVariable.FURNITURE_FIREWORKS_DATA, asset.logic.particleSystems);
+                this.object.model.setValue<IAssetLogicParticleSystem[]>(RoomObjectVariable.FURNITURE_FIREWORKS_DATA, asset.logic.particleSystems);
             }
         }
     }

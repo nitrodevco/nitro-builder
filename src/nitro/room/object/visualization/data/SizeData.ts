@@ -1,5 +1,5 @@
 import { BLEND_MODES } from 'pixi.js';
-import { IAssetColor, IAssetVisualizationDirection, IAssetVisualizationLayer } from '../../../../../api';
+import { IAssetVisualizationColor, IAssetVisualizationDirection, IAssetVisualizationLayer } from '../../../../../api';
 import { ColorData } from './ColorData';
 import { DirectionData } from './DirectionData';
 import { LayerData } from './LayerData';
@@ -96,7 +96,7 @@ export class SizeData
         return true;
     }
 
-    public processColors(colors: { [index: string]: IAssetColor }): boolean
+    public processColors(colors: { [index: string]: IAssetVisualizationColor }): boolean
     {
         if(!colors) return false;
 

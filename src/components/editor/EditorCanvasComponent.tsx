@@ -1,47 +1,21 @@
-import { FC, useCallback, useEffect, useRef } from 'react';
-import { GetAssetManager, GetPixi, RoomObjectCategory, RoomVariableEnum, Vector3d } from '../../api';
+import { FC, useEffect, useRef } from 'react';
+import { AssetData, GetAssetManager, GetPixi, RoomObjectCategory, Vector3d } from '../../api';
 import { useNitroBundle, useRoomPreviewer } from '../../hooks';
-import { GetRoomEngine, RoomGeometry, RoomPreviewer } from '../../nitro';
+import { GetRoomEngine, RoomPreviewer } from '../../nitro';
 import { DispatchMouseEvent } from '../../utils';
-import { EditorToolsComponent } from './EditorToolsComponent';
+import { EditorCanvasToolsComponent } from './EditorCanvasToolsComponent';
 
 export const EditorCanvasComponent: FC<{}> = props =>
 {
     const { assetData = null, spritesheet = null } = useNitroBundle();
-    const { roomPreviewer } = useRoomPreviewer();
+    const { roomPreviewer, centerRoom = null } = useRoomPreviewer();
     const elementRef = useRef<HTMLDivElement>();
-
-    const centerRoom = useCallback(() =>
-    {
-        const roomEngine = GetRoomEngine();
-        const geometry = roomEngine.getRoomInstanceGeometry(roomPreviewer.roomId, RoomPreviewer.PREVIEW_CANVAS_ID) as RoomGeometry;
-
-        if(geometry)
-        {
-            const minX = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MIN_X) || 0);
-            const maxX = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MAX_X) || 0);
-            const minY = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MIN_Y) || 0);
-            const maxY = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MAX_Y) || 0);
-
-            let x = ((minX + maxX) / 2);
-            let y = ((minY + maxY) / 2);
-
-            const offset = 20;
-
-            x = (x + (offset - 1));
-            y = (y + (offset - 1));
-
-            const z = (Math.sqrt(((offset * offset) + (offset * offset))) * Math.tan(((30 / 180) * Math.PI)));
-
-            geometry.location = new Vector3d(x, y, z);
-        }
-    }, [ roomPreviewer ]);
 
     useEffect(() =>
     {
         if(!roomPreviewer) return;
 
-        const element = elementRef.current.parentElement;
+        const element = elementRef.current;
         const width = Math.floor(element.clientWidth);
         const height = Math.floor(element.clientHeight);
         const pixi = GetPixi();
@@ -63,7 +37,7 @@ export const EditorCanvasComponent: FC<{}> = props =>
     {
         if(!roomPreviewer) return;
         
-        const element = elementRef.current.parentElement;
+        const element = elementRef.current;
         const width = Math.floor(element.clientWidth);
         const height = Math.floor(element.clientHeight);
         const pixi = GetPixi();
@@ -76,7 +50,7 @@ export const EditorCanvasComponent: FC<{}> = props =>
 
     useEffect(() =>
     {
-        const element = elementRef.current.parentElement;
+        const element = elementRef.current;
 
         const resizeObserver = new ResizeObserver(() =>
         {
@@ -105,6 +79,10 @@ export const EditorCanvasComponent: FC<{}> = props =>
 
         GetAssetManager().createCollection(assetData, spritesheet);
 
+        console.log(assetData);
+
+        console.log(AssetData.from(assetData));
+
         roomPreviewer.addFurnitureIntoRoom(assetData.name, new Vector3d(90))
 
         const camera = GetRoomEngine().getRoomCamera(roomPreviewer.roomId);
@@ -121,8 +99,8 @@ export const EditorCanvasComponent: FC<{}> = props =>
     }, [ assetData, spritesheet, roomPreviewer ]);
 
     return (
-        <div className="w-full h-full" ref={ elementRef }>
-            <EditorToolsComponent />
-        </div>
+        <div className="relative w-full h-full" ref={ elementRef }>
+            <EditorCanvasToolsComponent />
+        </div>  
     );
 }

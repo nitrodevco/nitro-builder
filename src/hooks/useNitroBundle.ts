@@ -1,7 +1,7 @@
 import { Spritesheet, Texture } from 'pixi.js';
 import { useCallback, useMemo, useState } from 'react';
 import { useBetween } from 'use-between';
-import { ExportNitroBundle, IAssetData, IAssetVisualizationData, NitroBundle } from '../api';
+import { AssetData, ExportNitroBundle, IAssetData, IAssetVisualizationData, NitroBundle } from '../api';
 
 const DEFAULT_VISUALIZATION_SIZE = 64;
 
@@ -99,7 +99,9 @@ const useNitroBundleHook = () =>
                         await newSpritesheet.parse();
                     }
 
-                    setAssetData(newAssetData);
+                    const newerAssetData = AssetData.from(newAssetData).toJSON();
+
+                    setAssetData(newerAssetData);
                     setSpritesheet(newSpritesheet)
 
                     resolve(true);

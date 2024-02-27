@@ -14,7 +14,7 @@ export class AdvancedMap<T, U> implements IAdvancedMap<T, U>
         this._array = [];
         this._keys = [];
 
-        if(map) for(const [key, value] of map.entries()) this.add(key, value);
+        if(map) for(const [ key, value ] of map.entries()) this.add(key, value);
     }
 
     public get length(): number

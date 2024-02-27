@@ -10,7 +10,7 @@ module.exports = {
                 sans: [ 'Rubik', 'sans-serif' ],
             },
             height: {
-                'top-bar': '44px',
+                'top-bar': '35px',
             },
             maxHeight: {
                 '200': '200px'

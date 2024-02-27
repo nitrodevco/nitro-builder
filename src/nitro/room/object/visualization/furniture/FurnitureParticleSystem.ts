@@ -1,5 +1,5 @@
 import { AlphaFilter, Graphics, Matrix, Point, Sprite, Texture } from 'pixi.js';
-import { AdvancedMap, IAdvancedMap, IGraphicAsset, IParticleSystem, IRoomObjectSprite, TextureUtils, Vector3d } from '../../../../../api';
+import { AdvancedMap, IAdvancedMap, IAssetLogicParticleSystem, IGraphicAsset, IRoomObjectSprite, TextureUtils, Vector3d } from '../../../../../api';
 import { FurnitureAnimatedVisualization } from './FurnitureAnimatedVisualization';
 import { FurnitureParticleSystemEmitter } from './FurnitureParticleSystemEmitter';
 
@@ -220,7 +220,7 @@ export class FurnitureParticleSystem
         }
     }
 
-    public parseData(particleSystem: IParticleSystem): void
+    public parseData(particleSystem: IAssetLogicParticleSystem): void
     {
         this._size = particleSystem.size;
         this._canvasId = ((particleSystem.canvasId !== undefined) ? particleSystem.canvasId : -1);

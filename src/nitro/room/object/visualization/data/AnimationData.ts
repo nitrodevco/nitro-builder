@@ -1,4 +1,4 @@
-import { IAssetVisualAnimation, IAssetVisualAnimationLayer, IAssetVisualAnimationSequenceFrame } from '../../../../../api';
+import { IAssetVisualizationAnimation, IAssetVisualizationAnimationLayer, IAssetVisualizationAnimationSequenceFrame } from '../../../../../api';
 import { AnimationFrame } from './AnimationFrame';
 import { AnimationLayerData } from './AnimationLayerData';
 import { DirectionalOffsetData } from './DirectionalOffsetData';
@@ -76,7 +76,7 @@ export class AnimationData
         return Math.random() * this._frameCount;
     }
 
-    public initialize(k: IAssetVisualAnimation): boolean
+    public initialize(k: IAssetVisualizationAnimation): boolean
     {
         if(k.randomStart) this._randomStart = true;
 
@@ -101,7 +101,7 @@ export class AnimationData
         return true;
     }
 
-    private addLayer(animationId: number, loopCount: number, frameRepeat: number, isRandom: boolean, layer: IAssetVisualAnimationLayer): boolean
+    private addLayer(animationId: number, loopCount: number, frameRepeat: number, isRandom: boolean, layer: IAssetVisualizationAnimationLayer): boolean
     {
         const layerData = new AnimationLayerData(loopCount, frameRepeat, isRandom);
 
@@ -150,7 +150,7 @@ export class AnimationData
         return true;
     }
 
-    private readDirectionalOffsets(frame: IAssetVisualAnimationSequenceFrame): DirectionalOffsetData
+    private readDirectionalOffsets(frame: IAssetVisualizationAnimationSequenceFrame): DirectionalOffsetData
     {
         let directionalOffset: DirectionalOffsetData = null;
 

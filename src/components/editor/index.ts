@@ -1,2 +1,2 @@
 export * from './EditorCanvasComponent';
-export * from './EditorToolsComponent';
+export * from './EditorCanvasToolsComponent';

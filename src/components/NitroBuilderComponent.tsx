@@ -1,5 +1,5 @@
-import { FC, PropsWithChildren, useEffect } from 'react';
-import { useNitroBundle } from '../hooks';
+import { FC, PropsWithChildren } from 'react';
+import { useFileUploader, useNitroBundle } from '../hooks';
 import { Flex } from '../layout';
 import { EditorCanvasComponent } from './editor';
 import { SideBarComponent } from './side-bar';
@@ -7,46 +7,8 @@ import { TopBarComponent } from './top-bar';
 
 export const NitroBuilderComponent: FC<PropsWithChildren<{}>> = props =>
 {
-    const { assetData = null, importBundle = null } = useNitroBundle();
-
-    useEffect(() =>
-    {
-        const onDrop = async (event: DragEvent) =>
-        {
-            event.preventDefault();
-
-            try
-            {
-                const file = event?.dataTransfer?.files?.[0];
-
-                if(!file) return;
-
-                await importBundle(file);
-            }
-
-            catch(err)
-            {
-                console.error(err);
-            }
-        }
-
-        document.body.addEventListener('dragenter', event =>
-        {
-            event.preventDefault();
-        });
-
-        document.body.addEventListener('dragover', event =>
-        {
-            event.preventDefault();
-        });
-
-        document.body.addEventListener('drop', onDrop);
-
-        return () =>
-        {
-            document.body.removeEventListener('drop', onDrop);
-        }
-    }, [ importBundle ]);
+    const { assetData = null } = useNitroBundle();
+    const {} = useFileUploader();
 
     return (
         <Flex

@@ -1,4 +1,4 @@
-export interface ICustomVars
+export interface IAssetLogicCustomVars
 {
     variables?: string[];
 }

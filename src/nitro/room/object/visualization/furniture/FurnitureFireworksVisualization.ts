@@ -1,4 +1,4 @@
-import { AdvancedMap, IAdvancedMap, IParticleSystem, RoomObjectVariable } from '../../../../../api';
+import { AdvancedMap, IAdvancedMap, IAssetLogicParticleSystem, RoomObjectVariable } from '../../../../../api';
 import { FurnitureAnimatedVisualization } from './FurnitureAnimatedVisualization';
 import { FurnitureParticleSystem } from './FurnitureParticleSystem';
 
@@ -88,7 +88,7 @@ export class FurnitureFireworksVisualization extends FurnitureAnimatedVisualizat
     {
         if(!this.object || !this.object.model) return false;
 
-        const fireworksData = this.object.model.getValue<IParticleSystem[]>(RoomObjectVariable.FURNITURE_FIREWORKS_DATA);
+        const fireworksData = this.object.model.getValue<IAssetLogicParticleSystem[]>(RoomObjectVariable.FURNITURE_FIREWORKS_DATA);
 
         if(!fireworksData || !fireworksData.length) return false;
 

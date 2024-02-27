@@ -1,4 +1,4 @@
-import { IAssetGesture, IAssetPosture } from '../../../../../api';
+import { IAssetVisualizationGesture, IAssetVisualizationPosture } from '../../../../../api';
 import { AnimationSizeData } from './AnimationSizeData';
 
 export class PetSizeData extends AnimationSizeData
@@ -18,7 +18,7 @@ export class PetSizeData extends AnimationSizeData
         this._defaultPosture = null;
     }
 
-    public processPostures(postures: { defaultPosture?: string, postures: IAssetPosture[] }): boolean
+    public processPostures(postures: { defaultPosture?: string, postures: IAssetVisualizationPosture[] }): boolean
     {
         if(!postures) return false;
 
@@ -40,7 +40,7 @@ export class PetSizeData extends AnimationSizeData
         return true;
     }
 
-    public processGestures(gestures: IAssetGesture[]): boolean
+    public processGestures(gestures: IAssetVisualizationGesture[]): boolean
     {
         if(!gestures) return false;
 

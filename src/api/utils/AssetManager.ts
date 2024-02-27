@@ -1,8 +1,11 @@
 import { Assets, Spritesheet, SpritesheetData, Texture } from 'pixi.js';
-import { GraphicAssetCollection, IAssetData, IGraphicAsset, IGraphicAssetCollection } from '../asset';
+import { IAssetData } from '../asset';
 import { NitroBundle } from '../bundle';
 import { ArrayBufferToBase64 } from './ArrayBufferToBase64';
+import { GraphicAssetCollection } from './GraphicAssetCollection';
 import { IAssetManager } from './IAssetManager';
+import { IGraphicAsset } from './IGraphicAsset';
+import { IGraphicAssetCollection } from './IGraphicAssetCollection';
 
 export class AssetManager implements IAssetManager
 {

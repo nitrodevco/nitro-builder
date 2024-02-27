@@ -1,13 +1,39 @@
 import { Assets, TextureSource } from 'pixi.js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
-import { GetAssetManager, GetPixi } from '../api';
-import { GetRoomEngine, RoomPreviewer } from '../nitro';
+import { GetAssetManager, GetPixi, RoomVariableEnum, Vector3d } from '../api';
+import { GetRoomEngine, RoomGeometry, RoomPreviewer } from '../nitro';
 import { SetActiveRoomId } from '../utils';
 
 const useRoomPreviewerHook = () =>
 {
     const [ roomPreviewer, setRoomPreviewer ] = useState<RoomPreviewer>(null);
+
+    const centerRoom = useCallback(() =>
+    {
+        const roomEngine = GetRoomEngine();
+        const geometry = roomEngine.getRoomInstanceGeometry(roomPreviewer.roomId, RoomPreviewer.PREVIEW_CANVAS_ID) as RoomGeometry;
+
+        if(geometry)
+        {
+            const minX = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MIN_X) || 0);
+            const maxX = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MAX_X) || 0);
+            const minY = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MIN_Y) || 0);
+            const maxY = (roomEngine.getRoomInstanceVariable<number>(roomPreviewer.roomId, RoomVariableEnum.ROOM_MAX_Y) || 0);
+
+            let x = ((minX + maxX) / 2);
+            let y = ((minY + maxY) / 2);
+
+            const offset = 20;
+
+            x = (x + (offset - 1));
+            y = (y + (offset - 1));
+
+            const z = (Math.sqrt(((offset * offset) + (offset * offset))) * Math.tan(((30 / 180) * Math.PI)));
+
+            geometry.location = new Vector3d(x, y, z);
+        }
+    }, [ roomPreviewer ]);
 
     useEffect(() =>
     {
@@ -63,7 +89,7 @@ const useRoomPreviewerHook = () =>
         }
     }, []);
 
-    return { roomPreviewer };
+    return { roomPreviewer, centerRoom };
 }
 
 export const useRoomPreviewer = () => useBetween(useRoomPreviewerHook);

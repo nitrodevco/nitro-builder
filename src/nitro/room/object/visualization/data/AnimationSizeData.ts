@@ -1,4 +1,4 @@
-import { IAssetVisualAnimation } from '../../../../../api';
+import { IAssetVisualizationAnimation } from '../../../../../api';
 import { AnimationData } from './AnimationData';
 import { AnimationFrame } from './AnimationFrame';
 import { SizeData } from './SizeData';
@@ -32,7 +32,7 @@ export class AnimationSizeData extends SizeData
         this._animationIds = [];
     }
 
-    public defineAnimations(animations: { [index: string]: IAssetVisualAnimation }): boolean
+    public defineAnimations(animations: { [index: string]: IAssetVisualizationAnimation }): boolean
     {
         if(!animations) return true;
 
