@@ -25,10 +25,10 @@ export const NitroBuilderComponent: FC<PropsWithChildren<{}>> = props =>
                 { assetData != null &&
                     <Flex
                         className="z-20 w-full h-full overflow-hidden text-white bg-side-bar"
-                        style={ { maxWidth: 300 } }>
+                        style={ { maxWidth: 400 } }>
                         <Flex
                             column
-                            className="w-full p-2">
+                            className="w-full">
                             <SideBarComponent />
                         </Flex>
                     </Flex> }

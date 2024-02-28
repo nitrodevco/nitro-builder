@@ -2,7 +2,7 @@ import { DetailedHTMLProps, forwardRef, HTMLAttributes, PropsWithChildren } from
 import { cls } from '../../api';
 
 const classes = {
-    base: 'flex flex-col bg-white shadow-md w-full'
+    base: 'flex flex-col bg-gray-100 shadow-md w-full'
 }
 
 interface CardProps

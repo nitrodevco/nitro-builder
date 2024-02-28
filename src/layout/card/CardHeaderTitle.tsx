@@ -2,7 +2,7 @@ import { DetailedHTMLProps, forwardRef, HTMLAttributes, PropsWithChildren } from
 import { cls } from '../../api';
 
 const classes = {
-    base: 'text-lg text-gray-500'
+    base: 'text-sm text-gray-500'
 }
 
 interface CardHeaderTitleProps

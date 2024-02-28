@@ -8,13 +8,13 @@ import { AssetLogicParticleSystem } from './particlesystem';
 export class AssetLogic
 {
     public model: AssetLogicModel;
-    public maskType: string;
-    public credits: string;
-    public soundSample: AssetLogicSoundSample;
-    public action: { link?: string, startState?: number };
-    public planetSystems: AssetLogicPlanetSystem[];
-    public particleSystems: AssetLogicParticleSystem[];
-    public customVars: AssetLogicCustomVars;
+    public maskType?: string;
+    public credits?: string;
+    public soundSample?: AssetLogicSoundSample;
+    public action?: { link?: string, startState?: number };
+    public planetSystems?: AssetLogicPlanetSystem[];
+    public particleSystems?: AssetLogicParticleSystem[];
+    public customVars?: AssetLogicCustomVars;
 
     public static from(data: IAssetLogic): AssetLogic
     {

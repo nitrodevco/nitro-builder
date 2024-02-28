@@ -8,6 +8,11 @@ const useNitroBundleHook = () =>
     const [ assetData, setAssetData ] = useState<AssetData>(null);
     const [ assets, setAssets ] = useState<({ texture: Texture } & IAssetItem)[]>(null);
 
+    const refreshAssetData = useCallback(() =>
+    {
+        setAssetData(prevValue => prevValue.clone());
+    }, []);
+
     const importBundle = useCallback(async (file: File) =>
     {
         await new Promise((resolve, reject) =>
@@ -56,15 +61,15 @@ const useNitroBundleHook = () =>
                         {
                             const newValue: ({ texture: Texture } & IAssetItem)[] = [];
 
-                            for(const name in newSpritesheet.textures)
+                            Object.keys(newSpritesheet.textures).forEach(key =>
                             {
                                 const newAsset: { texture: Texture } & IAssetItem = {
-                                    texture: newSpritesheet.textures[name]
+                                    texture: newSpritesheet.textures[key]
                                 };
 
-                                const parts = name.split('_');
+                                const parts = key.split('_');
 
-                                if(name.indexOf('_icon_') >= 0)
+                                if(key.indexOf('_icon_') >= 0)
                                 {
                                     newAsset.isIcon = true;
                                     newAsset.layerCode = parts[(parts.length - 1)];
@@ -78,7 +83,7 @@ const useNitroBundleHook = () =>
                                 }
 
                                 newValue.push(newAsset);
-                            }
+                            });
 
                             return newValue;
                         });
@@ -105,15 +110,13 @@ const useNitroBundleHook = () =>
     {
         if(!assetData || !assets) return;
 
-        console.log(assets, assetData);
-
         GetAssetManager().createCollection(assetData.toJSON(), assets.map(asset =>
         {
             return { name: `${ assetData.name }_${ Asset.getKeyWithName(assetData.name, asset) }`, texture: asset.texture };
         }));
     }, [ assetData, assets ]);
 
-    return { assetData, setAssetData, assets, setAssets, importBundle, exportBundle };
+    return { assetData, setAssetData, assets, setAssets, importBundle, exportBundle, refreshAssetData };
 }
 
 export const useNitroBundle = () => useBetween(useNitroBundleHook);

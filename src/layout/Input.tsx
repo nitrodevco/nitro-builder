@@ -7,13 +7,13 @@ const classes = {
     size: {
         xs: 'px-2 py-1 text-xs font-medium',
         sm: 'px-3 py-2 text-sm font-medium ',
-        default: 'px-5 py-2.5 text-sm font-medium',
+        default: 'p-0 text-xs font-medium',
         lg: 'px-5 py-3 text-base font-medium',
         xl: 'px-6 py-3.5 text-base font-medium',
     },
     rounded: 'rounded-md',
     color: {
-        default: 'focus:outline-none focus:ring-indigo-500 focus:border-indigo-500',
+        default: 'focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black',
     }
 }
 

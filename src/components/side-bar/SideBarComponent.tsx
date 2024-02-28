@@ -1,6 +1,9 @@
 import { FC } from 'react';
 import { useNitroBundle } from '../../hooks';
 import { Button, Flex } from '../../layout';
+import { AssetEditorComponent, TextureEditorComponent } from '../editor';
+import { GeneralEditorComponent } from '../editor/general-editor';
+import { LogicEditorComponent } from '../editor/logic-editor';
 
 export const SideBarComponent: FC<{}> = () =>
 {
@@ -14,14 +17,15 @@ export const SideBarComponent: FC<{}> = () =>
     return (
         <Flex
             column
-            className="w-full h-full gap-1 overflow-hidden">
+            className="w-full h-full py-2">
             <Flex
-                column>
-                <span>name: { assetData.name }</span>
-                <span>visualization type: { assetData.visualizationType }</span>
-                <span>logic type: { assetData.logicType }</span>
-                <span>visualizations: { visualizations.toString() }</span>
+                column
+                className="gap-2 overflow-auto">
                 <Button onClick={ () => exportBundle() }>Export Bundle</Button>
+                <GeneralEditorComponent />
+                <LogicEditorComponent />
+                <TextureEditorComponent />
+                <AssetEditorComponent />
             </Flex>
         </Flex>
     );

@@ -1,7 +1,9 @@
 import { Sprite, Texture } from 'pixi.js';
-import { Base64ToArrayBuffer, ISpritesheetData, TextureUtils } from '..';
+import { Asset, IAssetItem, ISpritesheetData } from '../asset';
+import { TextureUtils } from '../pixi';
+import { Base64ToArrayBuffer } from './Base64ToArrayBuffer';
 
-export const CreateSpritesheet = async (name: string, assets: { size?: number, layerCode?: string, direction?: number, frameNumber?: number, isIcon?: boolean, texture: Texture }[]) =>
+export const CreateSpritesheet = async (name: string, assets: ({ texture: Texture } & IAssetItem)[]) =>
 {
     if(!assets || !assets.length) return null;
 
@@ -10,25 +12,16 @@ export const CreateSpritesheet = async (name: string, assets: { size?: number, l
 
     const sprites = assets.map(asset =>
     {
-        const texture = asset.texture;
-        const width = texture.width;
-        const height = texture.height;
-
-        if(asset.isIcon)
-        {
-            texture.label = `${ name }_${ name }_icon_${ asset.layerCode }`;
-        }
-        else
-        {
-            texture.label = `${ name }_${ name }_${ asset.size }_${ asset.layerCode }_${ asset.direction }_${ asset.frameNumber }`
-        }
+        const width = asset.texture.width;
+        const height = asset.texture.height;
 
         if(spritesheetWidth < width) spritesheetWidth = width;
 
         spritesheetHeight += height;
 
         return {
-            texture,
+            name: `${ name }_${ Asset.getKeyWithName(name, asset) }`,
+            texture: asset.texture,
             position: { x: 0, y: (spritesheetHeight - height) },
             dimensions: { width, height }
         };
@@ -62,7 +55,7 @@ export const CreateSpritesheet = async (name: string, assets: { size?: number, l
 
     sprites.forEach(sprite =>
     {
-        jsonData.frames[sprite.texture.label] = {
+        jsonData.frames[sprite.name] = {
             frame: {
                 x: sprite.position.x,
                 y: sprite.position.y,

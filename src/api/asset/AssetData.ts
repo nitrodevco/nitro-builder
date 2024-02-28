@@ -21,6 +21,25 @@ export class AssetData
     public palettes: AssetPalette[];
     public visualizations: AssetVisualization[];
 
+    public clone(): AssetData
+    {
+        const assetData = new AssetData();
+
+        assetData.type = this.type;
+        assetData.name = this.name;
+        assetData.visualizationType = this.visualizationType;
+        assetData.logicType = this.logicType;
+        assetData.spritesheet = this.spritesheet;
+        assetData.logic = this.logic;
+        assetData.assets = this.assets;
+        assetData.aliases = this.aliases;
+        assetData.animations = this.animations;
+        assetData.palettes = this.palettes;
+        assetData.visualizations = this.visualizations;
+
+        return assetData;
+    }
+
     public static from(data: IAssetData): AssetData
     {
         const assetData = new AssetData();

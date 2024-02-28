@@ -2,7 +2,7 @@ import { DetailedHTMLProps, forwardRef, HTMLAttributes, PropsWithChildren } from
 import { cls } from '../../api';
 
 const classes = {
-    base: 'flex justify-between bg-gray-100 border-b py-2 px-4 select-none items-center overflow-hidden h-full max-h-[40px]'
+    base: 'flex justify-center bg-gray-100 border-b py-2 px-4 select-none items-center overflow-hidden h-full max-h-[25px]'
 }
 
 interface CardHeaderProps

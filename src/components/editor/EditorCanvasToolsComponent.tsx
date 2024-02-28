@@ -1,14 +1,12 @@
-import { FC, useRef } from 'react';
+import { FC } from 'react';
 import { MdZoomIn, MdZoomOut } from 'react-icons/md';
-import { useNitroBundle, useRoomPreviewer } from '../../hooks';
+import { useRoomPreviewer } from '../../hooks';
 import { Button, Flex } from '../../layout';
 import { GetRoomEngine } from '../../nitro';
 
 export const EditorCanvasToolsComponent: FC<{}> = props =>
 {
-    const { assetData = null, setAssetData = null, spritesheet = null } = useNitroBundle();
     const { roomPreviewer = null, centerRoom = null } = useRoomPreviewer();
-    const elementRef = useRef<HTMLDivElement>();
 
     if(!roomPreviewer) return null;
 
