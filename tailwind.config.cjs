@@ -26,10 +26,8 @@ module.exports = {
         require('@tailwindcss/forms'),
         require('@headlessui/tailwindcss')({ prefix: 'ui' })
     ],
-    content: {
-        content: [
-            './index.html',
-            './src/**/*.{html,js,jsx,ts,tsx}'
-        ]
-    }
+    content: [
+        './index.html',
+        './src/**/*.{html,js,jsx,ts,tsx}'
+    ]
 }

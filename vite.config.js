@@ -2,10 +2,9 @@
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import VitePluginHtmlEnv from 'vite-plugin-html-env';
 
 export default defineConfig({
-    plugins: [ VitePluginHtmlEnv(), react() ],
+    plugins: [ react() ],
     resolve: {
         alias: {
             '@': resolve(__dirname, 'src'),
