@@ -82,6 +82,8 @@ const useNitroBundleHook = () =>
                                     newAsset.frameNumber = parseInt(parts[(parts.length - 1)]);
                                 }
 
+                                if(newAsset.layerCode === 'sd') newAsset.isShadow = true;
+
                                 newValue.push(newAsset);
                             });
 

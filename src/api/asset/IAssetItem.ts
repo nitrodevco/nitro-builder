@@ -6,4 +6,5 @@ export interface IAssetItem
     direction?: number;
     frameNumber?: number;
     isIcon?: boolean;
+    isShadow?: boolean;
 }

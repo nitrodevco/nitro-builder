@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { AssetOptions } from '../../../api';
 import { useLanguage, useNitroBundle } from '../../../hooks';
 import { Card, CardBody, CardHeader, CardHeaderTitle, Flex, Input, Label } from '../../../layout';
 
@@ -16,6 +17,16 @@ export const GeneralEditorComponent: FC<{}> = props =>
             newValue[key] = value;
 
             return newValue;
+        });
+    }
+
+    const setLayerCount = (count: number, size: number) =>
+    {
+        setAssetData(prevValue =>
+        {
+            prevValue.setLayerCount(count, size);
+
+            return prevValue.clone();
         });
     }
 
@@ -59,6 +70,26 @@ export const GeneralEditorComponent: FC<{}> = props =>
                             type="text"
                             value={ assetData.logicType }
                             onChange={ event => updateAssetData('logicType', event.target.value) } />
+                    </Flex>
+                    <Flex
+                        className="gap-1">
+                        <Label>
+                            { localizeText('asset.layerCount') }
+                        </Label>
+                        <Input
+                            type="text"
+                            defaultValue={ assetData.getTotalLayers(AssetOptions.DEFAULT_SIZE) }
+                            onChange={ event => setLayerCount(parseInt(event.target.value), AssetOptions.DEFAULT_SIZE) } />
+                    </Flex>
+                    <Flex
+                        className="gap-1">
+                        <Label>
+                            { localizeText('asset.layerIconCount') }
+                        </Label>
+                        <Input
+                            type="text"
+                            defaultValue={ assetData.getTotalLayers(AssetOptions.ICON_SIZE) }
+                            onChange={ event => setLayerCount(parseInt(event.target.value), AssetOptions.ICON_SIZE) } />
                     </Flex>
                 </Flex>
             </CardBody>

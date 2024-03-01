@@ -18,6 +18,7 @@ export * from './IGraphicAssetCollection';
 export * from './IGraphicAssetPalette';
 export * from './IVector3D';
 export * from './Int32';
+export * from './LetterToNumber';
 export * from './LinkEventTracker';
 export * from './MouseEventType';
 export * from './NumberBank';

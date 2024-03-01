@@ -1,5 +1,6 @@
 import { Asset } from './Asset';
 import { AssetAlias } from './AssetAlias';
+import { AssetOptions } from './AssetOptions';
 import { AssetPalette } from './AssetPalette';
 import { IAssetData } from './IAssetData';
 import { AssetAnimation } from './animation';
@@ -20,6 +21,54 @@ export class AssetData
     public animations: AssetAnimation[];
     public palettes: AssetPalette[];
     public visualizations: AssetVisualization[];
+
+    public getVisualization(size: number = AssetOptions.DEFAULT_SIZE): AssetVisualization
+    {
+        let visualization: AssetVisualization = null;
+
+        if(this.visualizations && this.visualizations.length) visualization = this.visualizations.find(visualization => (visualization.size === size));
+
+        if(visualization) return visualization;
+        
+        visualization = AssetVisualization.from({
+            size,
+            layerCount: 1,
+            angle: 45
+
+        });
+
+        if(!this.visualizations) this.visualizations = [];
+
+        this.visualizations.push(visualization);
+
+        return visualization;
+    }
+
+    public getTotalLayers(size: number = AssetOptions.DEFAULT_SIZE): number
+    {
+        let layerCount = AssetOptions.MIN_LAYER_COUNT;
+
+        const visualization = this.getVisualization(size);
+
+        if(visualization)
+        {
+            if(visualization.layerCount > layerCount) layerCount = visualization.layerCount;
+        }
+
+        return layerCount;
+    }
+
+    public setLayerCount(count: number, size: number = AssetOptions.DEFAULT_SIZE): void
+    {
+        count = Math.min(count, AssetOptions.MAX_LAYER_COUNT);
+        count = Math.max(count, AssetOptions.MIN_LAYER_COUNT);
+
+        const visualization = this.getVisualization(size);
+
+        if(!visualization) return;
+
+        visualization.layerCount = count;
+    }
 
     public clone(): AssetData
     {

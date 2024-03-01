@@ -38,7 +38,7 @@ export const TextureEditorListComponent: FC<{}> = props =>
             className="gap-2">
             { assets.sort(assetSorter).map((asset, index) =>
             {
-                return <TextureEditorItemComponent key={ index } assetIndex={ index } />
+                return <TextureEditorItemComponent key={ index } textureAssetIndex={ index } />
             }) }
         </Flex>
     )

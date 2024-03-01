@@ -14,28 +14,6 @@ export const EditorCanvasComponent: FC<{}> = props =>
     useEffect(() =>
     {
         if(!roomPreviewer) return;
-
-        const element = elementRef.current;
-        const width = Math.floor(element.clientWidth);
-        const height = Math.floor(element.clientHeight);
-        const pixi = GetPixi();
-        const canvas = pixi.canvas;
-
-        canvas.onclick = event => DispatchMouseEvent(event);
-        canvas.onmousemove = event => DispatchMouseEvent(event);
-        canvas.onmousedown = event => DispatchMouseEvent(event);
-        canvas.onmouseup = event => DispatchMouseEvent(event);
-        //canvas.style['imageRendering'] = 'pixelated';
-
-        pixi.renderer.resize(width, height);
-        pixi.render();
-
-        element.appendChild(canvas);
-    }, [ roomPreviewer ]);
-
-    useEffect(() =>
-    {
-        if(!roomPreviewer) return;
         
         const element = elementRef.current;
         const width = Math.floor(element.clientWidth);
@@ -47,31 +25,6 @@ export const EditorCanvasComponent: FC<{}> = props =>
 
         centerRoom();
     }, [ roomPreviewer, centerRoom ]);
-
-    useEffect(() =>
-    {
-        const element = elementRef.current;
-
-        const resizeObserver = new ResizeObserver(() =>
-        {
-            if(!roomPreviewer || !element) return;
-
-            const width = Math.floor(element.clientWidth);
-            const height = Math.floor(element.clientHeight);
-
-            roomPreviewer.modifyRoomCanvas(width, height);
-
-            GetPixi().renderer.resize(width, height);
-            GetPixi().render();
-        });
-        
-        resizeObserver.observe(element);
-
-        return () =>
-        {
-            resizeObserver.disconnect();
-        }
-    }, [ roomPreviewer ]);
 
     useEffect(() =>
     {
@@ -91,6 +44,40 @@ export const EditorCanvasComponent: FC<{}> = props =>
             roomPreviewer.reset(true);
         }
     }, [ assetData, assets, roomPreviewer ]);
+
+    useEffect(() =>
+    {
+        if(!roomPreviewer) return;
+
+        const element = elementRef.current;
+        const pixi = GetPixi();
+        const canvas = pixi.canvas;
+
+        canvas.onclick = event => DispatchMouseEvent(event);
+        canvas.onmousemove = event => DispatchMouseEvent(event);
+        canvas.onmousedown = event => DispatchMouseEvent(event);
+        canvas.onmouseup = event => DispatchMouseEvent(event);
+        //canvas.style['imageRendering'] = 'pixelated';
+
+        pixi.resizeTo = elementRef.current;
+        pixi.resize();
+
+        element.appendChild(canvas);
+
+        const resizeObserver = new ResizeObserver(() =>
+        {
+            if(!roomPreviewer || !element) return;
+
+            roomPreviewer.modifyRoomCanvas(Math.floor(element.clientWidth), Math.floor(element.clientHeight));
+        });
+
+        resizeObserver.observe(element);
+
+        return () =>
+        {
+            resizeObserver.disconnect();
+        }
+    }, [ roomPreviewer ]);
 
     return (
         <div className="relative w-full h-full" ref={ elementRef }>

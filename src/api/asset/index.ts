@@ -1,6 +1,7 @@
 export * from './Asset';
 export * from './AssetAlias';
 export * from './AssetData';
+export * from './AssetOptions';
 export * from './AssetPalette';
 export * from './IAsset';
 export * from './IAssetAlias';

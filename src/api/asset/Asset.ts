@@ -4,6 +4,7 @@ import { IAssetItem } from './IAssetItem';
 export class Asset implements IAssetItem
 {
     public isIcon: boolean = false;
+    public isShadow: boolean = false;
     public size: number;
     public layerCode: string;
     public direction: number;
@@ -54,6 +55,8 @@ export class Asset implements IAssetItem
             asset.direction = parseInt(parts[(parts.length - 2)]);
             asset.frameNumber = parseInt(parts[(parts.length - 1)]);
         }
+
+        if(asset.layerCode === 'sd') asset.isShadow = true;
 
         return asset;
     }

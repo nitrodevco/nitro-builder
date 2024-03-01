@@ -1,3 +1,18 @@
 {
-    "application.name": "NitroBuilder"
+    "application.name": "NitroBuilder",
+    "asset.size.icon": "icon",
+    "asset.size.64": "normal",
+    "asset.size.32": "small",
+    "asset.shadow": "shadow",
+    "asset.layer": "layer",
+    "asset.direction": "direction",
+    "asset.direction.0": "north",
+    "asset.direction.1": "north east",
+    "asset.direction.2": "east",
+    "asset.direction.3": "south east",
+    "asset.direction.4": "south",
+    "asset.direction.5": "south west",
+    "asset.direction.6": "west",
+    "asset.direction.7": "north west",
+    "asset.frame": "frame"
 }

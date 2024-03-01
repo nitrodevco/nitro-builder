@@ -1,32 +1,58 @@
 import { Assets, Sprite, Texture } from 'pixi.js';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { ArrayBufferToBase64, TextureUtils } from '../../../api';
-import { useNitroBundle } from '../../../hooks';
+import { ArrayBufferToBase64, LetterToNumber, TextureUtils } from '../../../api';
+import { useLanguage, useNitroBundle } from '../../../hooks';
 import { Badge, Flex, Image, Input } from '../../../layout';
 
-export const TextureEditorItemComponent: FC<{ assetIndex: number }> = props =>
+export const TextureEditorItemComponent: FC<{ textureAssetIndex: number }> = props =>
 {
-    const { assetIndex = -1 } = props;
+    const { textureAssetIndex = -1 } = props;
     const [ textureUrl, setTextureUrl ] = useState<string>('');
     const { assets = null, setAssets = null } = useNitroBundle();
+    const { localizeText = null } = useLanguage();
+
+    const [ assetSize, setAssetSize ] = useState<number>(null);
+    const [ assetLayerCode, setAssetLayerCode ] = useState<string>(null);
+    const [ assetDirection, setAssetDirection ] = useState<number>(null);
+    const [ assetFrameNumber, setAssetFrameNumber ] = useState<number>(null);
+    const [ assetIsIcon, setAssetIsIcon ] = useState<boolean>(false);
 
     const asset = useMemo(() =>
     {
-        if(assetIndex === -1) return null;
+        if(textureAssetIndex === -1) return null;
 
-        return assets[assetIndex] ?? null;
-    }, [ assetIndex, assets ]);
+        return assets[textureAssetIndex] ?? null;
+    }, [ textureAssetIndex, assets ]);
 
-    const updateAsset = (key: string, value: any) =>
+    useEffect(() =>
+    {
+        if(asset == null)
+        {
+            return;
+        }
+
+        setAssetSize(asset.size);
+        setAssetLayerCode(asset.layerCode);
+        setAssetDirection(asset.direction);
+        setAssetFrameNumber(asset.frameNumber);
+        setAssetIsIcon(asset.isIcon);
+    }, [ asset ]);
+
+    const saveChanges = () =>
     {
         setAssets(prevValue =>
         {
-            if(prevValue[assetIndex] === undefined) return prevValue;
+            if(prevValue[textureAssetIndex] === undefined) return prevValue;
 
             const newValue = [ ...prevValue ];
+            const newAsset = { ...newValue[textureAssetIndex] };
 
-            newValue[assetIndex] = { ...newValue[assetIndex ] };
-            newValue[assetIndex][key] = value;
+            newAsset.size = assetSize;
+            newAsset.layerCode = assetLayerCode;
+            newAsset.direction = assetDirection;
+            newAsset.frameNumber = assetFrameNumber;
+
+            newValue[textureAssetIndex] = newAsset;
 
             return newValue;
         });
@@ -50,7 +76,7 @@ export const TextureEditorItemComponent: FC<{ assetIndex: number }> = props =>
             {
                 const texture = await Assets.load<Texture>(`data:image/png;base64,${ ArrayBufferToBase64(result) }`);
 
-                updateAsset('texture', texture);
+                //updateAsset('texture', texture);
             })();
         }
     }
@@ -62,11 +88,11 @@ export const TextureEditorItemComponent: FC<{ assetIndex: number }> = props =>
         (async () => setTextureUrl(await TextureUtils.generateImageUrl(new Sprite(asset.texture))))();
     }, [ asset ]);
 
-    if(assetIndex === -1) return null;
+    if(textureAssetIndex === -1) return null;
 
     return (
         <Flex
-            className="justify-center gap-1">
+            className="items-center justify-center gap-1">
             { textureUrl && textureUrl.length &&
                 <Image className="object-none select-none min-w-[50px] max-w-[50px] min-h-[50px] max-h-[50px]" src={ textureUrl } /> }
             <Flex
@@ -74,10 +100,10 @@ export const TextureEditorItemComponent: FC<{ assetIndex: number }> = props =>
                 className="w-full gap-1">
                 <Flex
                     className="gap-1">
-                    <Badge>size: { asset.isIcon ? 'icon' : asset.size }</Badge>
-                    <Badge>layer: { asset.layerCode }</Badge>
-                    { !asset.isIcon && <Badge>direction: { asset.direction }</Badge> }
-                    { !asset.isIcon && <Badge>frame: { asset.frameNumber }</Badge> }
+                    <Badge>{ localizeText(`asset.size.${ asset.isIcon ? 'icon' : asset.size }`) }</Badge>
+                    <Badge>{ asset.isShadow ? localizeText('asset.shadow') : `${ localizeText('asset.layer') } ${ LetterToNumber(asset.layerCode) }` }</Badge>
+                    { !asset.isIcon && <Badge>{ localizeText('asset.direction') } { localizeText(`asset.direction.${ asset.direction }`) }</Badge> }
+                    { !asset.isIcon && <Badge>{ localizeText('asset.frame') } { asset.frameNumber }</Badge> }
                 </Flex>
                 <Flex>
                     <Input
