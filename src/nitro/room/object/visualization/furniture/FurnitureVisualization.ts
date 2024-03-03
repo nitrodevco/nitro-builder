@@ -175,7 +175,6 @@ export class FurnitureVisualization extends RoomObjectSpriteVisualization
 
         if(updateSprites || (number !== 0))
         {
-            console.log('yee')
             this.updateSprites(scale, updateSprites, number);
 
             this._scale = scale;
