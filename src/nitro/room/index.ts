@@ -6,7 +6,7 @@ export * from './RoomInstance';
 export * from './RoomManager';
 export * from './RoomObjectEventHandler';
 export * from './RoomObjectLogicFactory';
-export * from './RoomPreviewer';
+export * from './RoomObjectManager';
 export * from './messages';
 export * from './object';
 export * from './object/data';
