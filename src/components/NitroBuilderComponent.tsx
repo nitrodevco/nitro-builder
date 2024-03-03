@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 import { useFileUploader, useNitroBundle } from '../hooks';
 import { Flex } from '../layout';
-import { EditorCanvasComponent } from './editor';
+import { EditorCanvas2Component } from './editor';
 import { SideBarComponent } from './side-bar';
 import { TopBarComponent } from './top-bar';
 
@@ -20,12 +20,12 @@ export const NitroBuilderComponent: FC<PropsWithChildren<{}>> = props =>
                 <Flex
                     justifyContent="center"
                     className="z-10 w-full h-full overflow-hidden bg-black">
-                    <EditorCanvasComponent />
+                    <EditorCanvas2Component />
                 </Flex>
                 { assetData != null &&
                     <Flex
                         className="z-20 w-full h-full overflow-hidden text-white bg-side-bar"
-                        style={ { maxWidth: 400 } }>
+                        style={ { maxWidth: 450 } }>
                         <Flex
                             column
                             className="w-full">

@@ -4,5 +4,6 @@ export interface IRoomObjectModel
     getValue<T>(key: string): T;
     setValue<T>(key: string, value: T): void;
     removeKey(key: string): void;
+    forceRefresh(): void;
     updateCounter: number;
 }

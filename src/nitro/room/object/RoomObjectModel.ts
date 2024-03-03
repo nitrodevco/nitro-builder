@@ -46,6 +46,11 @@ export class RoomObjectModel implements IRoomObjectModel
         this._updateCounter++;
     }
 
+    public forceRefresh(): void
+    {
+        this._updateCounter++;
+    }
+
     public get updateCounter(): number
     {
         return this._updateCounter;

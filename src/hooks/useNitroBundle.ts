@@ -112,10 +112,19 @@ const useNitroBundleHook = () =>
     {
         if(!assetData || !assets) return;
 
-        GetAssetManager().createCollection(assetData.toJSON(), assets.map(asset =>
+        const collection = GetAssetManager().getCollection(assetData.name);
+
+        if(!collection)
         {
-            return { name: `${ assetData.name }_${ Asset.getKeyWithName(assetData.name, asset) }`, texture: asset.texture };
-        }));
+            GetAssetManager().createCollection(assetData.toJSON(), assets.map(asset =>
+            {
+                return { name: `${ assetData.name }_${ Asset.getKeyWithName(assetData.name, asset) }`, texture: asset.texture };
+            }));
+            
+            return;
+        }
+
+        collection.define(assetData.toJSON());
     }, [ assetData, assets ]);
 
     return { assetData, setAssetData, assets, setAssets, importBundle, exportBundle, refreshAssetData };

@@ -219,8 +219,6 @@ export class RoomObjectVisualizationFactory implements IRoomObjectVisualizationF
             visualizationData.avatarManager = Nitro.instance.avatar;
         } */
 
-        if(RoomObjectVisualizationFactory.CACHING_ENABLED) this._visualizationDatas.set(type, visualizationData);
-
         return visualizationData;
     }
 }

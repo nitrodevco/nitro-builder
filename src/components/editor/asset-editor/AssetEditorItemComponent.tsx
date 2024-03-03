@@ -1,7 +1,8 @@
 import { FC } from 'react';
+import { MdAdd, MdRemove } from 'react-icons/md';
 import { Asset } from '../../../api';
 import { useLanguage, useNitroBundle } from '../../../hooks';
-import { Flex, Input, Label } from '../../../layout';
+import { Button, Flex, Input, Label } from '../../../layout';
 
 export const AssetEditorItemComponent: FC<{ asset: Asset }> = props =>
 {
@@ -9,10 +10,11 @@ export const AssetEditorItemComponent: FC<{ asset: Asset }> = props =>
     const { localizeText } = useLanguage();
     const { refreshAssetData = null } = useNitroBundle();
 
-    const updateAsset = (key: string, value: any) =>
+    const updateAsset = (key: keyof Asset, value: any) =>
     {
         if(asset[key] === undefined) return;
 
+        //@ts-ignore
         asset[key] = value;
 
         refreshAssetData();
@@ -31,54 +33,91 @@ export const AssetEditorItemComponent: FC<{ asset: Asset }> = props =>
                 <Flex
                     className="gap-2 text-xs">
                     <Flex
-                        className="gap-1">
+                        column
+                        className="gap-1 justify-center items-center">
                         <Label>
                             { localizeText('asset.x') }
                         </Label>
-                        <Input
-                            type="number"
-                            value={ asset.x }
-                            onChange={ event => updateAsset('x', event.target.valueAsNumber) } />
+                        <Flex
+                            className="gap-1">
+                            <Button
+                                size="xs"
+                                onClick={ event => updateAsset('x', (asset.x + 1)) }>
+                                <MdAdd />
+                            </Button>
+                            { asset.x }
+                            <Button
+                                size="xs"
+                                onClick={ event => updateAsset('x', (asset.x - 1)) }>
+                                <MdRemove />
+                            </Button>
+                        </Flex>
                     </Flex>
                     <Flex
-                        className="gap-1">
+                        column
+                        className="gap-1 justify-center items-center">
                         <Label>
                             { localizeText('asset.y') }
                         </Label>
-                        <Input
-                            type="number"
-                            value={ asset.y }
-                            onChange={ event => updateAsset('y', event.target.valueAsNumber) } />
+                        <Flex
+                            className="gap-1">
+                            <Button
+                                size="xs"
+                                onClick={ event => updateAsset('y', (asset.y + 1)) }>
+                                <MdAdd />
+                            </Button>
+                            { asset.y }
+                            <Button
+                                size="xs"
+                                onClick={ event => updateAsset('y', (asset.y - 1)) }>
+                                <MdRemove />
+                            </Button>
+                        </Flex>
                     </Flex>
                     <Flex
-                        className="gap-1">
+                        column
+                        className="gap-1 justify-center items-center">
                         <Label>
                             { localizeText('asset.flipH') }
                         </Label>
-                        <Input
-                            type="checkbox"
-                            checked={ asset.flipH }
-                            onChange={ event => updateAsset('flipH', event.target.checked) } />
+                        <Flex
+                            className="gap-1">
+                            <Input
+                                type="checkbox"
+                                inputSize="xs"
+                                checked={ asset.flipH }
+                                onChange={ event => updateAsset('flipH', event.target.checked) } />
+                        </Flex>
                     </Flex>
                     <Flex
-                        className="gap-1">
+                        column
+                        className="gap-1 justify-center items-center">
                         <Label>
                             { localizeText('asset.flipV') }
                         </Label>
-                        <Input
-                            type="checkbox"
-                            checked={ asset.flipV }
-                            onChange={ event => updateAsset('flipV', event.target.checked) } />
+                        <Flex
+                            className="gap-1">
+                            <Input
+                                type="checkbox"
+                                inputSize="xs"
+                                checked={ asset.flipV }
+                                onChange={ event => updateAsset('flipV', event.target.checked) } />
+                        </Flex>
                     </Flex>
                     <Flex
-                        className="gap-1">
+                        column
+                        className="gap-1 justify-center items-center">
                         <Label>
                             { localizeText('asset.usesPalette') }
                         </Label>
-                        <Input
-                            type="checkbox"
-                            checked={ asset.usesPalette }
-                            onChange={ event => updateAsset('usesPalette', event.target.checked) } />
+                        <Flex
+                            className="gap-1">
+                            <Input
+                                type="checkbox"
+                                inputSize="xs"
+                                checked={ asset.usesPalette }
+                                onChange={ event => updateAsset('usesPalette', event.target.checked) } />
+                        </Flex>
                     </Flex>
                 </Flex>
             </Flex>

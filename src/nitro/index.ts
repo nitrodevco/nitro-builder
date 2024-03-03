@@ -1,4 +1,5 @@
 export * from './CenterRoom';
+export * from './CreatePlaneParser';
 export * from './GetRoomEngine';
 export * from './PrepareRoomEngine';
 export * from './avatar';

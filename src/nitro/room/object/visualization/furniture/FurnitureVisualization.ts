@@ -10,7 +10,7 @@ export class FurnitureVisualization extends RoomObjectSpriteVisualization
 
     public static TYPE: string = RoomObjectVisualizationType.FURNITURE_STATIC;
 
-    protected _data: FurnitureVisualizationData;
+    public _data: FurnitureVisualizationData;
 
     protected _type: string;
     protected _direction: number;
@@ -175,6 +175,7 @@ export class FurnitureVisualization extends RoomObjectSpriteVisualization
 
         if(updateSprites || (number !== 0))
         {
+            console.log('yee')
             this.updateSprites(scale, updateSprites, number);
 
             this._scale = scale;

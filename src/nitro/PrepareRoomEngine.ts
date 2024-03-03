@@ -2,13 +2,17 @@ import { Assets } from 'pixi.js';
 import { GetAssetManager, GetPixi } from '../api';
 import { GetRoomEngine } from './GetRoomEngine';
 
-export const PrepareRoomEngine = async () =>
+let IS_READY = false;
+
+export const PrepareRoomEngine = async (width: number, height: number) =>
 {
+    if(IS_READY) return;
+
     await GetPixi().init({
         autoStart: false,
         autoDensity: false,
-        width: 800,
-        height: 600,
+        width,
+        height,
         sharedTicker: true,
         backgroundAlpha: 0
     });
@@ -28,4 +32,6 @@ export const PrepareRoomEngine = async () =>
     await GetAssetManager().downloadAsset('https://assets.nitrodev.co/bundled/generic/tile_cursor.nitro');
             
     await GetRoomEngine().init();
+
+    IS_READY = true;
 }
